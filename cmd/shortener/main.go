@@ -38,7 +38,7 @@ func createShortURL(res http.ResponseWriter, req *http.Request) {
 	globalURLStorage[urlMask] = string(body)
 	res.Header().Set("Content-Type", "text/plain")
 	res.WriteHeader(http.StatusCreated)
-	responseURL := fmt.Sprintf("localhost:8080/%s", urlMask)
+	responseURL := fmt.Sprintf("http://localhost:8080/%s", urlMask)
 	res.Write([]byte(responseURL))
 }
 
@@ -52,7 +52,11 @@ func createRandomMask() string {
 
 func returnFullURL(res http.ResponseWriter, req *http.Request) {
 	urlID := req.PathValue("id")
-	resultURL, _ := globalURLStorage[urlID]
+	resultURL, ok := globalURLStorage[urlID]
+	if !ok {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	res.Header().Set("Location", resultURL)
 	res.WriteHeader(http.StatusTemporaryRedirect)
 }
