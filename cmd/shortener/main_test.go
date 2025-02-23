@@ -139,6 +139,7 @@ func TestReturnFullURL(t *testing.T) {
 			w := httptest.NewRecorder()
 			returnFullURL(w, request)
 			result := w.Result()
+			defer result.Body.Close()
 			assert.Equal(t, test.expect.status, result.StatusCode)
 			if test.expect.location != "" {
 				assert.Equal(t, test.expect.location, result.Header.Get("Location"))
