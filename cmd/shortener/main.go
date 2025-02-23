@@ -28,9 +28,10 @@ func run() error {
 func createShortURL(res http.ResponseWriter, req *http.Request) {
 	if !(req.Method == http.MethodPost && req.URL.Path == "/") {
 		res.WriteHeader(http.StatusBadRequest)
+		return
 	}
 	body, err := io.ReadAll(req.Body)
-	if err != nil {
+	if err != nil || len(body) == 0 {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
