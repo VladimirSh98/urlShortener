@@ -14,18 +14,18 @@ func main() {
 	}
 }
 
-var globalUrlStorage = map[string]string{}
+var globalURLStorage = map[string]string{}
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func run() error {
 	router := http.NewServeMux()
-	router.HandleFunc("/", createShortUrl)
-	router.HandleFunc("GET /{id}", returnFullUrl)
+	router.HandleFunc("/", createShortURL)
+	router.HandleFunc("GET /{id}", returnFullURL)
 	return http.ListenAndServe(":8080", router)
 }
 
-func createShortUrl(res http.ResponseWriter, req *http.Request) {
+func createShortURL(res http.ResponseWriter, req *http.Request) {
 	if !(req.Method == http.MethodPost && req.URL.Path == "/") {
 		res.WriteHeader(http.StatusBadRequest)
 	}
@@ -36,11 +36,11 @@ func createShortUrl(res http.ResponseWriter, req *http.Request) {
 	}
 	// check url in body
 	urlMask := createRandomMask()
-	globalUrlStorage[urlMask] = string(body)
+	globalURLStorage[urlMask] = string(body)
 	res.Header().Set("Content-Type", "text/plain")
 	res.WriteHeader(http.StatusCreated)
-	responseUrl := fmt.Sprintf("localhost:8080/%s", urlMask)
-	res.Write([]byte(responseUrl))
+	responseURL := fmt.Sprintf("localhost:8080/%s", urlMask)
+	res.Write([]byte(responseURL))
 }
 
 func createRandomMask() string {
@@ -51,13 +51,13 @@ func createRandomMask() string {
 	return string(result)
 }
 
-func returnFullUrl(res http.ResponseWriter, req *http.Request) {
-	urlId := req.PathValue("id")
-	resultUrl, ok := globalUrlStorage[urlId]
+func returnFullURL(res http.ResponseWriter, req *http.Request) {
+	urlID := req.PathValue("id")
+	resultURL, ok := globalURLStorage[urlID]
 	if !ok {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	res.Header().Set("Location", resultUrl)
+	res.Header().Set("Location", resultURL)
 	res.WriteHeader(http.StatusTemporaryRedirect)
 }
