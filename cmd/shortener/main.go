@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"io"
 	"math/rand"
 	"net/http"
@@ -19,9 +20,9 @@ var globalURLStorage = map[string]string{}
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func run() error {
-	router := http.NewServeMux()
-	router.HandleFunc("/", createShortURL)
-	router.HandleFunc("GET /{id}", returnFullURL)
+	router := chi.NewMux()
+	router.Post("/", createShortURL)
+	router.Get("/{id}", returnFullURL)
 	return http.ListenAndServe(":8080", router)
 }
 
