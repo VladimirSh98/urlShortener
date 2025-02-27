@@ -19,7 +19,7 @@ func parseFlags() {
 	if cfg.ServerAddress != "" {
 		flagRunAddr = cfg.ServerAddress
 	}
-	if cfg.BaseUrl != "" {
-		flagResultAddr = cfg.BaseUrl
+	if cfg.BaseURL != "" {
+		flagResultAddr = cfg.BaseURL
 	}
 }
