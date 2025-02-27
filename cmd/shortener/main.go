@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	parseFlags()
 	err := run()
 	if err != nil {
 		panic(err)
@@ -23,7 +24,7 @@ func run() error {
 	router := chi.NewMux()
 	router.Post("/", createShortURL)
 	router.Get("/{id}", returnFullURL)
-	return http.ListenAndServe(":8080", router)
+	return http.ListenAndServe(flagRunAddr, router)
 }
 
 func createShortURL(res http.ResponseWriter, req *http.Request) {
@@ -40,7 +41,7 @@ func createShortURL(res http.ResponseWriter, req *http.Request) {
 	globalURLStorage[urlMask] = string(body)
 	res.Header().Set("Content-Type", "text/plain")
 	res.WriteHeader(http.StatusCreated)
-	responseURL := fmt.Sprintf("http://localhost:8080/%s", urlMask)
+	responseURL := fmt.Sprintf("%s/%s", flagResultAddr, urlMask)
 	res.Write([]byte(responseURL))
 }
 
