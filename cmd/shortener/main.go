@@ -8,6 +8,11 @@ import (
 	"net/http"
 )
 
+type Config struct {
+	ServerAddress string `env:"SERVER_ADDRESS"`
+	BaseUrl       string `env:"BASE_URL"`
+}
+
 func main() {
 	parseFlags()
 	err := run()
@@ -24,6 +29,7 @@ func run() error {
 	router := chi.NewMux()
 	router.Post("/", createShortURL)
 	router.Get("/{id}", returnFullURL)
+
 	return http.ListenAndServe(flagRunAddr, router)
 }
 
