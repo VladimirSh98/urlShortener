@@ -10,7 +10,7 @@ import (
 func Run() error {
 	router := chi.NewMux()
 	router.Post(config.CreateShortURLPath, handler.CreateShortURL)
-	router.Get(config.GetShortURLPath, handler.ReturnFullURL)
+	router.Get("/{id}", handler.ReturnFullURL)
 
 	return http.ListenAndServe(config.FlagRunAddr, router)
 }

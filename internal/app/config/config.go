@@ -9,7 +9,6 @@ import (
 
 const ShortURLLength = 8
 const CreateShortURLPath = "/"
-const GetShortURLPath = "/{id}"
 
 var (
 	FlagResultAddr string
