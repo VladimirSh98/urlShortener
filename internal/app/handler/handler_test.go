@@ -1,6 +1,7 @@
-package main
+package handler
 
 import (
+	"github.com/VladimirSh98/urlShortener/internal/app/repository"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -82,7 +83,7 @@ func TestCreateShortURL(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			request := httptest.NewRequest(test.testRequest.method, test.testRequest.URL, strings.NewReader(test.testRequest.body))
 			w := httptest.NewRecorder()
-			createShortURL(w, request)
+			CreateShortURL(w, request)
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")
 			defer result.Body.Close()
@@ -97,9 +98,9 @@ func TestCreateShortURL(t *testing.T) {
 }
 
 func setupGlobalURLStorageCase() func() {
-	globalURLStorage["TestCase"] = "http://example.com"
+	repository.Create("TestCase", "http://example.com")
 	return func() {
-		delete(globalURLStorage, "TestCase")
+		repository.Delete("TestCase")
 	}
 }
 
@@ -137,7 +138,7 @@ func TestReturnFullURL(t *testing.T) {
 			request := httptest.NewRequest(http.MethodGet, test.URL, nil)
 			request.SetPathValue("id", test.URL[1:])
 			w := httptest.NewRecorder()
-			returnFullURL(w, request)
+			ReturnFullURL(w, request)
 			result := w.Result()
 			defer result.Body.Close()
 			assert.Equal(t, test.expect.status, result.StatusCode)
