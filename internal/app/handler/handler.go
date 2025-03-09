@@ -10,7 +10,7 @@ import (
 )
 
 func CreateShortURL(res http.ResponseWriter, req *http.Request) {
-	if !(req.Method == http.MethodPost && req.URL.Path == "/") {
+	if !(req.Method == http.MethodPost && req.URL.Path == config.CreateShortURLPath) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
