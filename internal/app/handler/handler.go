@@ -10,10 +10,6 @@ import (
 )
 
 func CreateShortURL(res http.ResponseWriter, req *http.Request) {
-	if !(req.Method == http.MethodPost && req.URL.Path == config.CreateShortURLPath) {
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
 	body, err := io.ReadAll(req.Body)
 	if err != nil || len(body) == 0 {
 		res.WriteHeader(http.StatusBadRequest)
@@ -24,7 +20,10 @@ func CreateShortURL(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "text/plain")
 	res.WriteHeader(http.StatusCreated)
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
-	res.Write([]byte(responseURL))
+	_, err = res.Write([]byte(responseURL))
+	if err != nil {
+		return
+	}
 }
 
 func ReturnFullURL(res http.ResponseWriter, req *http.Request) {

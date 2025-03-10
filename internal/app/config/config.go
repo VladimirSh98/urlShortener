@@ -8,7 +8,6 @@ import (
 )
 
 const ShortURLLength = 8
-const CreateShortURLPath = "/"
 
 var (
 	FlagResultAddr string
@@ -25,13 +24,16 @@ type defaultConfig struct {
 	BaseURL       string `yaml:"base_url"`
 }
 
-func ParseFlags() {
+func ParseFlags() error {
 	var cfg Config
 	err := env.Parse(&cfg)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	defaultConfigValues := parseDefaultConfigValues()
+	defaultConfigValues, err := parseDefaultConfigValues()
+	if err != nil {
+		return err
+	}
 	flag.StringVar(&FlagRunAddr, "a", defaultConfigValues.ServerAddress, "Run address")
 	flag.StringVar(&FlagResultAddr, "b", defaultConfigValues.BaseURL, "Result address")
 	flag.Parse()
@@ -41,18 +43,19 @@ func ParseFlags() {
 	if cfg.BaseURL != "" {
 		FlagResultAddr = cfg.BaseURL
 	}
+	return nil
 }
 
-func parseDefaultConfigValues() defaultConfig {
+func parseDefaultConfigValues() (defaultConfig, error) {
 	defaultData, err := os.ReadFile("default_config.yaml")
 	if err != nil {
-		panic(err)
+		return defaultConfig{}, err
 	}
 
 	var defaultConfigValues defaultConfig
 	err = yaml.Unmarshal(defaultData, &defaultConfigValues)
 	if err != nil {
-		panic(err)
+		return defaultConfig{}, err
 	}
-	return defaultConfigValues
+	return defaultConfigValues, nil
 }
