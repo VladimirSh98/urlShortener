@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	err := logger.Initilize()
+	err := logger.Initialize()
 	if err != nil {
 		log.Fatalf("Logger configuration failed: %v", err)
 	}

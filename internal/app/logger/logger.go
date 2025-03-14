@@ -4,7 +4,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Initilize() error {
+func Initialize() error {
 	logger, err := zap.NewDevelopment()
 	if err != nil {
 		return err
