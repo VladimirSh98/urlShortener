@@ -1,9 +1,9 @@
 package handler
 
-type ApiShortenRequestData struct {
+type APIShortenRequestData struct {
 	URL string `json:"url" validate:"required"`
 }
 
-type ApiShortenResponse struct {
+type APIShortenResponseData struct {
 	Result string `json:"result"`
 }

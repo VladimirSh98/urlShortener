@@ -54,7 +54,7 @@ func CreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var data ApiShortenRequestData
+	var data APIShortenRequestData
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		sugar.Errorln("CreateShortURLByJSON json unmarshall error", err)
@@ -69,11 +69,11 @@ func CreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	repository.Create(urlMask, string(body))
+	repository.Create(urlMask, data.URL)
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(http.StatusCreated)
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
-	response, err := json.Marshal(ApiShortenResponse{Result: responseURL})
+	response, err := json.Marshal(APIShortenResponseData{Result: responseURL})
 	if err != nil {
 		sugar.Warnln("CreateShortURLByJSON json marshall error", err)
 		res.WriteHeader(http.StatusBadRequest)
