@@ -6,12 +6,6 @@ import (
 	"time"
 )
 
-type customResponseWriter struct {
-	http.ResponseWriter
-	size   int
-	status int
-}
-
 func createCustomResponseWriter(w http.ResponseWriter) *customResponseWriter {
 	return &customResponseWriter{w, 0, 220}
 }
