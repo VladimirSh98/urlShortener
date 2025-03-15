@@ -48,7 +48,7 @@ func ReturnFullURL(res http.ResponseWriter, req *http.Request) {
 func CreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	body, err := io.ReadAll(req.Body)
-	if err != nil || len(body) == 0 {
+	if err != nil {
 		sugar.Errorln("CreateShortURLByJSON body read error", err)
 		res.WriteHeader(http.StatusBadRequest)
 		return
