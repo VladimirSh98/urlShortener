@@ -1,9 +1,8 @@
 package middleware
 
 import (
-	"github.com/andybalholm/brotli"
+	"compress/gzip"
 	"go.uber.org/zap"
-	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -44,16 +43,21 @@ func Config(h http.Handler) http.Handler {
 		method := request.Method
 		var responseStatus, responseSize int
 		contentEncoding := request.Header.Get("Content-Encoding")
-		sendCompress := strings.Contains(contentEncoding, "br")
+		sendCompress := strings.Contains(contentEncoding, "gzip")
 		if sendCompress {
-			cr := brotli.NewReader(request.Body)
-			request.Body = io.NopCloser(cr)
+			cr, err := gzip.NewReader(request.Body)
+			if err != nil {
+				customWriter.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			request.Body = cr
+			defer cr.Close()
 		}
-		if strings.Contains(request.Header.Get("Accept-Encoding"), "br") {
-			brWriter := brotli.NewWriterLevel(customWriter, brotli.BestCompression)
-			defer brWriter.Close()
-			customCompressWriter := compressWriter{*customWriter, brWriter}
-			customCompressWriter.Header().Set("Content-Encoding", "br")
+		if strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
+			gzipWriter := gzip.NewWriter(customWriter)
+			defer gzipWriter.Close()
+			customCompressWriter := compressWriter{*customWriter, gzipWriter}
+			customCompressWriter.Header().Set("Content-Encoding", "gzip")
 			h.ServeHTTP(&customCompressWriter, request)
 			responseStatus = customCompressWriter.status
 			responseSize = customCompressWriter.size
