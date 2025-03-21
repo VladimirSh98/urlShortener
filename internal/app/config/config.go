@@ -12,6 +12,7 @@ const ShortURLLength = 8
 var (
 	FlagResultAddr string
 	FlagRunAddr    string
+	DBFilePath     string
 )
 
 func ParseFlags() error {
@@ -26,12 +27,16 @@ func ParseFlags() error {
 	}
 	flag.StringVar(&FlagRunAddr, "a", defaultConfigValues.ServerAddress, "Run address")
 	flag.StringVar(&FlagResultAddr, "b", defaultConfigValues.BaseURL, "Result address")
+	flag.StringVar(&DBFilePath, "f", defaultConfigValues.DBFilePath, "DB file path")
 	flag.Parse()
 	if cfg.ServerAddress != "" {
 		FlagRunAddr = cfg.ServerAddress
 	}
 	if cfg.BaseURL != "" {
 		FlagResultAddr = cfg.BaseURL
+	}
+	if cfg.DBFilePath != "" {
+		DBFilePath = cfg.DBFilePath
 	}
 	return nil
 }

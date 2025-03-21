@@ -21,7 +21,7 @@ func CreateShortURL(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	repository.Create(urlMask, string(body))
+	repository.Create(urlMask, string(body), true)
 	res.Header().Set("Content-Type", "text/plain")
 	res.WriteHeader(http.StatusCreated)
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
@@ -69,7 +69,7 @@ func CreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	repository.Create(urlMask, data.URL)
+	repository.Create(urlMask, data.URL, true)
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(http.StatusCreated)
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
