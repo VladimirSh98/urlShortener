@@ -38,7 +38,7 @@ func ParseFlags() error {
 	if cfg.DBFilePath != "" {
 		DBFilePath = cfg.DBFilePath
 	}
-	DBFilePath = DBFilePath + defaultConfigValues.DBFileName
+	DBFilePath = DBFilePath + "/" + defaultConfigValues.DBFileName
 	return nil
 }
 
