@@ -100,7 +100,7 @@ func TestCreateShortURL(t *testing.T) {
 }
 
 func setupGlobalURLStorageCase() func() {
-	repository.Create("TestCase", "http://example.com")
+	repository.Create("TestCase", "http://example.com", false)
 	return func() {
 		repository.Delete("TestCase")
 	}
