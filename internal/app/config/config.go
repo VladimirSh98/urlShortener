@@ -43,7 +43,7 @@ func ParseFlags() error {
 	if DBFilePath == "" {
 		DBFilePath = defaultConfigValues.DBFilePath
 	}
-	DBFilePath = filepath.Join(DBFilePath, defaultConfigValues.DBFileName)
+	DBFilePath = filepath.Join(".", DBFilePath, defaultConfigValues.DBFileName)
 	return nil
 }
 
