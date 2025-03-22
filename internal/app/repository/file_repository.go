@@ -34,7 +34,11 @@ func (handler *FileHandler) Write(mask string, originalURL string) (string, erro
 }
 
 func (handler *FileHandler) Close() error {
-	err := handler.file.Close()
+	err := handler.writer.Flush()
+	if err != nil {
+		return err
+	}
+	err = handler.file.Close()
 	if err != nil {
 		return err
 	}
