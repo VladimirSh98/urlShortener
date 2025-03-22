@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
+	"go.uber.org/zap"
 	"io"
 	"os"
 	"path/filepath"
@@ -41,7 +42,6 @@ func (handler *FileHandler) Close() error {
 }
 
 func (handler *FileHandler) Open() error {
-	var err error
 	path := filepath.Join(config.DBFilePath, config.DBFileName)
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
@@ -49,6 +49,8 @@ func (handler *FileHandler) Open() error {
 	}
 	handler.file = file
 	handler.writer = bufio.NewWriter(handler.file)
+	sugar := zap.S()
+	sugar.Infow("Opened file %v", path)
 	return nil
 }
 
