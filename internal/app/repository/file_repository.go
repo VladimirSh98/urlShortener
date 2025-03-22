@@ -7,6 +7,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"io"
 	"os"
+	"path/filepath"
 )
 
 var DBHandler = FileHandler{}
@@ -40,7 +41,14 @@ func (handler *FileHandler) Close() error {
 }
 
 func (handler *FileHandler) Open() error {
-	file, err := os.OpenFile(config.DBFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	var err error
+	var currentDir string
+	currentDir, err = os.Getwd()
+	if err != nil {
+		return err
+	}
+	path := filepath.Join(currentDir, config.DBFilePath, config.DBFileName)
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -50,11 +58,26 @@ func (handler *FileHandler) Open() error {
 }
 
 func (handler *FileHandler) OpenReadOnly() error {
-	file, err := os.OpenFile(config.DBFilePath, os.O_RDONLY|os.O_CREATE, 0666)
+	var err error
+	var currentDir string
+	currentDir, err = os.Getwd()
 	if err != nil {
 		return err
 	}
-	handler.file = file
+	path := filepath.Join(currentDir, config.DBFilePath)
+	_, err = os.Stat(path)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			fmt.Printf("Ошибка при создании директории: %v\n", err)
+			return err
+		}
+	}
+	fullPath := filepath.Join(path, config.DBFileName)
+	handler.file, err = os.OpenFile(fullPath, os.O_CREATE|os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		return err
+	}
 	handler.reader = bufio.NewReader(handler.file)
 	return nil
 }

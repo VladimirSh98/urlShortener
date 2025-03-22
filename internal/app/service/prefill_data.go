@@ -4,6 +4,7 @@ import "github.com/VladimirSh98/urlShortener/internal/app/repository"
 
 func prefill() error {
 	err := repository.DBHandler.OpenReadOnly()
+	defer repository.DBHandler.Close()
 	if err != nil {
 		return err
 	}

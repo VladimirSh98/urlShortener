@@ -13,6 +13,7 @@ var (
 	FlagResultAddr string
 	FlagRunAddr    string
 	DBFilePath     string
+	DBFileName     string
 )
 
 func ParseFlags() error {
@@ -38,7 +39,7 @@ func ParseFlags() error {
 	if cfg.DBFilePath != "" {
 		DBFilePath = cfg.DBFilePath
 	}
-	DBFilePath = "." + DBFilePath + defaultConfigValues.DBFileName
+	DBFileName = defaultConfigValues.DBFileName
 	return nil
 }
 
