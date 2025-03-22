@@ -42,7 +42,7 @@ func (handler *FileHandler) Close() error {
 
 func (handler *FileHandler) Open() error {
 	var err error
-	path := filepath.Join(config.DBFilePath, config.DBFileName)
+	path := filepath.Join(".", config.DBFilePath, config.DBFileName)
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func (handler *FileHandler) OpenReadOnly() error {
 			return err
 		}
 	}
-	fullPath := filepath.Join(config.DBFilePath, config.DBFileName)
+	fullPath := filepath.Join(".", config.DBFilePath, config.DBFileName)
 	handler.file, err = os.OpenFile(fullPath, os.O_CREATE|os.O_RDONLY, 0666)
 	if err != nil {
 		return err
