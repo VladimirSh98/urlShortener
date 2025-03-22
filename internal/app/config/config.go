@@ -5,6 +5,7 @@ import (
 	"github.com/caarlos0/env/v6"
 	"gopkg.in/yaml.v3"
 	"os"
+	"path/filepath"
 )
 
 const ShortURLLength = 8
@@ -39,7 +40,7 @@ func ParseFlags() error {
 	if cfg.DBFilePath != "" {
 		DBFilePath = cfg.DBFilePath
 	}
-	DBFileName = defaultConfigValues.DBFileName
+	DBFilePath = filepath.Join(DBFilePath, defaultConfigValues.DBFileName)
 	return nil
 }
 
