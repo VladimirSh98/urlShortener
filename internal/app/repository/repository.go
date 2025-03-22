@@ -7,7 +7,6 @@ var globalURLStorage = map[string]string{}
 func Create(mask string, originalURL string, writeToFile bool) string {
 	globalURLStorage[mask] = originalURL
 	if writeToFile {
-		sugar := zap.S()
 		err := DBHandler.Open()
 		defer DBHandler.Close()
 		if err != nil {
@@ -19,7 +18,6 @@ func Create(mask string, originalURL string, writeToFile bool) string {
 			sugar.Warnln("Failed write to file")
 			return mask
 		}
-		sugar.Infoln("Successfully wrote to file")
 	}
 	return mask
 }
