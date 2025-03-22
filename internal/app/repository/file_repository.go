@@ -42,12 +42,7 @@ func (handler *FileHandler) Close() error {
 
 func (handler *FileHandler) Open() error {
 	var err error
-	var currentDir string
-	currentDir, err = os.Getwd()
-	if err != nil {
-		return err
-	}
-	path := filepath.Join(currentDir, config.DBFilePath, config.DBFileName)
+	path := filepath.Join(".", config.DBFilePath, config.DBFileName)
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		return err
@@ -59,12 +54,7 @@ func (handler *FileHandler) Open() error {
 
 func (handler *FileHandler) OpenReadOnly() error {
 	var err error
-	var currentDir string
-	currentDir, err = os.Getwd()
-	if err != nil {
-		return err
-	}
-	path := filepath.Join(currentDir, config.DBFilePath)
+	path := filepath.Join(".", config.DBFilePath)
 	_, err = os.Stat(path)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(path, os.ModePerm)
