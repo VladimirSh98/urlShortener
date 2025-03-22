@@ -10,11 +10,13 @@ func Create(mask string, originalURL string, writeToFile bool) string {
 		err := DBHandler.Open()
 		defer DBHandler.Close()
 		if err != nil {
-			sugar.Warnln("Failed to open file %v", err)
+			sugar := zap.S()
+			sugar.Warnln("Failed to open file")
 			return mask
 		}
 		_, err = DBHandler.Write(mask, originalURL)
 		if err != nil {
+			sugar := zap.S()
 			sugar.Warnln("Failed write to file")
 			return mask
 		}
