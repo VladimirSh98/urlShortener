@@ -50,7 +50,7 @@ func (handler *FileHandler) Open() error {
 	handler.file = file
 	handler.writer = bufio.NewWriter(handler.file)
 	sugar := zap.S()
-	sugar.Infow("Opened file %v", path)
+	sugar.Infow(path)
 	return nil
 }
 
@@ -60,7 +60,7 @@ func (handler *FileHandler) OpenReadOnly() error {
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(config.DBFilePath, os.ModePerm)
 		if err != nil {
-			fmt.Printf("Ошибка при создании директории: %v\n", err)
+			fmt.Printf("Ошибка при создании директории: %v \n", err)
 			return err
 		}
 	}

@@ -19,7 +19,7 @@ func Create(mask string, originalURL string, writeToFile bool) string {
 			sugar.Warnln("Failed write to file")
 			return mask
 		}
-		sugar.Infoln("Successfully wrote to file %v")
+		sugar.Infoln("Successfully wrote to file")
 	}
 	return mask
 }
