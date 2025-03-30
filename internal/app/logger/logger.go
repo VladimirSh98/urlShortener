@@ -4,14 +4,13 @@ import (
 	"go.uber.org/zap"
 )
 
-func Initialize() error {
+func Initialize() (*zap.Logger, error) {
 	logger, err := zap.NewDevelopment()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer logger.Sync()
 	zap.ReplaceGlobals(logger)
 	sugar := *logger.Sugar()
 	sugar.Infow("Logger initialized")
-	return nil
+	return logger, nil
 }

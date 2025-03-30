@@ -10,12 +10,12 @@ import (
 
 func createCustomResponseWriter(w http.ResponseWriter) *customResponseWriter {
 
-	return &customResponseWriter{w, 0, 200}
+	return &customResponseWriter{ResponseWriter: w, size: 0, status: 200}
 }
 
 func (lrw *customResponseWriter) WriteHeader(code int) {
 	lrw.status = code
-	lrw.ResponseWriter.WriteHeader(code)
+	lrw.once.Do(func() { lrw.ResponseWriter.WriteHeader(code) })
 }
 
 func (lrw *customResponseWriter) Write(body []byte) (int, error) {
@@ -26,7 +26,7 @@ func (lrw *customResponseWriter) Write(body []byte) (int, error) {
 
 func (lrw *compressWriter) WriteHeader(code int) {
 	lrw.status = code
-	lrw.ResponseWriter.WriteHeader(code)
+	lrw.once.Do(func() { lrw.ResponseWriter.WriteHeader(code) })
 }
 
 func (lrw *compressWriter) Write(body []byte) (int, error) {
@@ -59,7 +59,7 @@ func Config(h http.Handler) http.Handler {
 		if strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
 			gzipWriter := gzip.NewWriter(customWriter)
 			defer gzipWriter.Close()
-			customCompressWriter := compressWriter{*customWriter, gzipWriter}
+			customCompressWriter := compressWriter{customResponseWriter: *customWriter, Writer: gzipWriter}
 			customCompressWriter.Header().Set("Content-Encoding", "gzip")
 			h.ServeHTTP(&customCompressWriter, request)
 			responseStatus = customCompressWriter.status
