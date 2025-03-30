@@ -14,7 +14,9 @@ type customResponseWriter struct {
 }
 
 type compressWriter struct {
-	customResponseWriter
-	Writer io.Writer
+	http.ResponseWriter
+	size   int
+	status int
 	once   sync.Once
+	Writer io.Writer
 }

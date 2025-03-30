@@ -59,7 +59,12 @@ func Config(h http.Handler) http.Handler {
 		if strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
 			gzipWriter := gzip.NewWriter(customWriter)
 			defer gzipWriter.Close()
-			customCompressWriter := compressWriter{customResponseWriter: *customWriter, Writer: gzipWriter}
+			customCompressWriter := compressWriter{
+				ResponseWriter: customWriter.ResponseWriter,
+				size:           customWriter.size,
+				status:         customWriter.status,
+				Writer:         gzipWriter,
+			}
 			customCompressWriter.Header().Set("Content-Encoding", "gzip")
 			h.ServeHTTP(&customCompressWriter, request)
 			responseStatus = customCompressWriter.status
