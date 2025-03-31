@@ -13,10 +13,10 @@ var (
 	FlagResultAddr string
 	FlagRunAddr    string
 	DBFilePath     string
-	DBFileName     string
+	DatabaseDSN    string
 )
 
-func ParseFlags() error {
+func LoadConfig() error {
 	var cfg Config
 	err := env.Parse(&cfg)
 	if err != nil {
@@ -42,6 +42,7 @@ func ParseFlags() error {
 	if DBFilePath == "" {
 		DBFilePath = defaultConfigValues.DBFilePath
 	}
+	DatabaseDSN = cfg.DatabaseDSN
 	return nil
 }
 

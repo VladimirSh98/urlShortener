@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
+	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
@@ -85,4 +86,12 @@ func CreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
+}
+
+func Ping(res http.ResponseWriter, req *http.Request) {
+	err := database.DBConnection.Ping()
+	if err != nil {
+		res.WriteHeader(http.StatusInternalServerError)
+	}
+	res.WriteHeader(http.StatusOK)
 }
