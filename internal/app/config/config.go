@@ -29,6 +29,7 @@ func LoadConfig() error {
 	flag.StringVar(&FlagRunAddr, "a", defaultConfigValues.ServerAddress, "Run address")
 	flag.StringVar(&FlagResultAddr, "b", defaultConfigValues.BaseURL, "Result address")
 	flag.StringVar(&DBFilePath, "f", defaultConfigValues.DBFilePath, "DB file path")
+	flag.StringVar(&DatabaseDSN, "d", defaultConfigValues.DatabaseDSN, "DB file path")
 	flag.Parse()
 	if cfg.ServerAddress != "" {
 		FlagRunAddr = cfg.ServerAddress
@@ -42,7 +43,9 @@ func LoadConfig() error {
 	if DBFilePath == "" {
 		DBFilePath = defaultConfigValues.DBFilePath
 	}
-	DatabaseDSN = cfg.DatabaseDSN
+	if cfg.DatabaseDSN != "" {
+		DatabaseDSN = cfg.DatabaseDSN
+	}
 	return nil
 }
 
