@@ -12,17 +12,9 @@ const ShortURLLength = 8
 var (
 	FlagResultAddr string
 	FlagRunAddr    string
+	DBFilePath     string
+	DBFileName     string
 )
-
-type Config struct {
-	ServerAddress string `env:"SERVER_ADDRESS"`
-	BaseURL       string `env:"BASE_URL"`
-}
-
-type defaultConfig struct {
-	ServerAddress string `yaml:"server_address"`
-	BaseURL       string `yaml:"base_url"`
-}
 
 func ParseFlags() error {
 	var cfg Config
@@ -36,12 +28,19 @@ func ParseFlags() error {
 	}
 	flag.StringVar(&FlagRunAddr, "a", defaultConfigValues.ServerAddress, "Run address")
 	flag.StringVar(&FlagResultAddr, "b", defaultConfigValues.BaseURL, "Result address")
+	flag.StringVar(&DBFilePath, "f", defaultConfigValues.DBFilePath, "DB file path")
 	flag.Parse()
 	if cfg.ServerAddress != "" {
 		FlagRunAddr = cfg.ServerAddress
 	}
 	if cfg.BaseURL != "" {
 		FlagResultAddr = cfg.BaseURL
+	}
+	if cfg.DBFilePath != "" {
+		DBFilePath = cfg.DBFilePath
+	}
+	if DBFilePath == "" {
+		DBFilePath = defaultConfigValues.DBFilePath
 	}
 	return nil
 }
