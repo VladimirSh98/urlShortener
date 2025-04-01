@@ -18,18 +18,21 @@ var (
 
 func LoadConfig() error {
 	var cfg Config
-	err := env.Parse(&cfg)
+	var err error
+	var defaultConfigValues defaultConfig
+
+	err = env.Parse(&cfg)
 	if err != nil {
 		return err
 	}
-	defaultConfigValues, err := parseDefaultConfigValues()
+	defaultConfigValues, err = parseDefaultConfigValues()
 	if err != nil {
 		return err
 	}
 	flag.StringVar(&FlagRunAddr, "a", defaultConfigValues.ServerAddress, "Run address")
 	flag.StringVar(&FlagResultAddr, "b", defaultConfigValues.BaseURL, "Result address")
 	flag.StringVar(&DBFilePath, "f", defaultConfigValues.DBFilePath, "DB file path")
-	flag.StringVar(&DatabaseDSN, "d", defaultConfigValues.DatabaseDSN, "DB file path")
+	flag.StringVar(&DatabaseDSN, "d", defaultConfigValues.DatabaseDSN, "DB path")
 	flag.Parse()
 	if cfg.ServerAddress != "" {
 		FlagRunAddr = cfg.ServerAddress

@@ -8,11 +8,11 @@ import (
 
 var DBConnection *sql.DB
 
-func OpenConnectionDB() error {
+func OpenConnectionDB() (*sql.DB, error) {
 	var err error
 	DBConnection, err = sql.Open("pgx", config.DatabaseDSN)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return DBConnection, nil
 }
