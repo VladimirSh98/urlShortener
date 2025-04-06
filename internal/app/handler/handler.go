@@ -46,7 +46,6 @@ func ReturnFullURL(res http.ResponseWriter, req *http.Request) {
 
 func CreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 	ManagerCreateShortURLByJSON(res, req)
-	return
 }
 
 func Ping(res http.ResponseWriter, req *http.Request) {
@@ -59,5 +58,4 @@ func Ping(res http.ResponseWriter, req *http.Request) {
 
 func CreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 	ManagerCreateShortURLBatch(res, req)
-	return
 }
