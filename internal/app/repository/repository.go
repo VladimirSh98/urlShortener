@@ -1,22 +1,38 @@
 package repository
 
-import "go.uber.org/zap"
+import (
+	"errors"
+	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
+	"go.uber.org/zap"
+)
 
 var globalURLStorage = map[string]string{}
 
-func Create(mask string, originalURL string) string {
+func Create(mask string, originalURL string) (string, error) {
 	var err error
 	sugar := zap.S()
-	globalURLStorage[mask] = originalURL
 	_, err = createDB(mask, originalURL)
 	if err != nil {
 		sugar.Warnln("Failed write to database %v", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgerrcode.IsIntegrityConstraintViolation(pgErr.Code) {
+			sugar.Infoln("URL already exists %s", originalURL)
+			var oldMask string
+			oldMask, err = GetByOriginalURL(originalURL)
+			if err != nil {
+				return "", err
+			}
+			return oldMask, customErr.ErrConstraintViolation
+		}
 	}
+	globalURLStorage[mask] = originalURL
 	err = CreateInFile(mask, originalURL)
 	if err != nil {
 		sugar.Warnln("Failed write to file %v", err)
 	}
-	return mask
+	return mask, nil
 }
 
 func Get(mask string) (string, bool) {
@@ -59,4 +75,12 @@ func BatchCreate(data []ShortenBatchRequest) {
 			sugar.Warnln("Failed write to file %v", err)
 		}
 	}
+}
+
+func GetByOriginalURL(originalURL string) (string, error) {
+	result, err := GetByOriginalURLFromBD(originalURL)
+	if err != nil {
+		return "", err
+	}
+	return result.ID, nil
 }

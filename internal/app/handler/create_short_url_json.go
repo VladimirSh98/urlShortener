@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
+	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
@@ -36,9 +38,13 @@ func ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	repository.Create(urlMask, data.URL)
+	urlMask, err = repository.Create(urlMask, data.URL)
 	res.Header().Set("Content-Type", "application/json")
-	res.WriteHeader(http.StatusCreated)
+	if errors.Is(err, customErr.ErrConstraintViolation) {
+		res.WriteHeader(http.StatusConflict)
+	} else {
+		res.WriteHeader(http.StatusCreated)
+	}
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
 	response, err := json.Marshal(APIShortenResponseData{Result: responseURL})
 	if err != nil {

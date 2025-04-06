@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"io"
 	"net/http"
@@ -20,9 +22,13 @@ func CreateShortURL(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	repository.Create(urlMask, string(body))
+	urlMask, err = repository.Create(urlMask, string(body))
 	res.Header().Set("Content-Type", "text/plain")
-	res.WriteHeader(http.StatusCreated)
+	if errors.Is(err, customErr.ErrConstraintViolation) {
+		res.WriteHeader(http.StatusConflict)
+	} else {
+		res.WriteHeader(http.StatusCreated)
+	}
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
 	_, err = res.Write([]byte(responseURL))
 	if err != nil {

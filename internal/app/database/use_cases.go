@@ -32,6 +32,11 @@ func (db *DBConnectionStruct) Query(query string) (*sql.Rows, error) {
 	return res, nil
 }
 
+func (db *DBConnectionStruct) QueryRow(query string) *sql.Row {
+	res := db.conn.QueryRow(query)
+	return res
+}
+
 func (db *DBConnectionStruct) BatchCreate(queries []string) error {
 	tx, err := db.conn.Begin()
 	if err != nil {

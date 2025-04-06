@@ -50,3 +50,14 @@ func BatchCreateDB(data []ShortenBatchRequest) error {
 	}
 	return nil
 }
+
+func GetByOriginalURLFromBD(originalURL string) (Shortner, error) {
+	query := fmt.Sprintf("SELECT * FROM urls WHERE original_url = '%s' limit 1", originalURL)
+	row := database.DBConnection.QueryRow(query)
+	var record Shortner
+	err := row.Scan(&record.ID, &record.OriginalURL, &record.CreatedAt)
+	if err != nil {
+		return record, err
+	}
+	return record, nil
+}
