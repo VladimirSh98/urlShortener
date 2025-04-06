@@ -17,10 +17,14 @@ func createDB(mask string, originalURL string) (sql.Result, error) {
 
 func GetAllRecordsFromDB() ([]Shortner, error) {
 	query := "SELECT * FROM urls"
-	rows, err := database.DBConnection.Query(query)
 	results := make([]Shortner, 0)
+	rows, err := database.DBConnection.Query(query)
 	if err != nil {
-		return results, err
+		return nil, err
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, err
 	}
 	for rows.Next() {
 		var record Shortner
