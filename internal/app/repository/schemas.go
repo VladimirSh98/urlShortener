@@ -20,7 +20,7 @@ type FileHandler struct {
 }
 
 type Shortner struct {
-	Id          string
+	ID          string
 	OriginalURL string
 	CreatedAt   time.Time
 }

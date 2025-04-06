@@ -47,7 +47,7 @@ func prefillFromDB() error {
 		return err
 	}
 	for _, result := range results {
-		repository.CreateInMemory(result.Id, result.OriginalURL)
+		repository.CreateInMemory(result.ID, result.OriginalURL)
 	}
 	return nil
 }
