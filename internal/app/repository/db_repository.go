@@ -37,3 +37,16 @@ func GetAllRecordsFromDB() ([]Shortner, error) {
 	}
 	return results, nil
 }
+
+func BatchCreateDB(data []ShortenBatchRequest) error {
+	queries := make([]string, 0)
+	for _, record := range data {
+		query := fmt.Sprintf("INSERT INTO urls (id, original_url) VALUES ('%s', '%s');", record.Mask, record.URL)
+		queries = append(queries, query)
+	}
+	err := database.DBConnection.BatchCreate(queries)
+	if err != nil {
+		return err
+	}
+	return nil
+}

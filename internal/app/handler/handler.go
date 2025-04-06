@@ -1,13 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
-	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 	"io"
 	"net/http"
@@ -22,7 +20,7 @@ func CreateShortURL(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	repository.Create(urlMask, string(body), true)
+	repository.Create(urlMask, string(body))
 	res.Header().Set("Content-Type", "text/plain")
 	res.WriteHeader(http.StatusCreated)
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
@@ -47,45 +45,8 @@ func ReturnFullURL(res http.ResponseWriter, req *http.Request) {
 }
 
 func CreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
-	sugar := zap.S()
-	body, err := io.ReadAll(req.Body)
-	if err != nil {
-		sugar.Errorln("CreateShortURLByJSON body read error", err)
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	var data APIShortenRequestData
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		sugar.Errorln("CreateShortURLByJSON json unmarshall error", err)
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	v := validator.New()
-	err = v.Struct(data)
-	if err != nil {
-		sugar.Warnln("CreateShortURLByJSON validation error", err)
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	urlMask := utils.CreateRandomMask()
-	repository.Create(urlMask, data.URL, true)
-	res.Header().Set("Content-Type", "application/json")
-	res.WriteHeader(http.StatusCreated)
-	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
-	response, err := json.Marshal(APIShortenResponseData{Result: responseURL})
-	if err != nil {
-		sugar.Warnln("CreateShortURLByJSON json marshall error", err)
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	_, err = res.Write(response)
-	if err != nil {
-		sugar.Errorln("CreateShortURLByJSON response error", err)
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	ManagerCreateShortURLByJSON(res, req)
+	return
 }
 
 func Ping(res http.ResponseWriter, req *http.Request) {
@@ -94,4 +55,9 @@ func Ping(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusInternalServerError)
 	}
 	res.WriteHeader(http.StatusOK)
+}
+
+func CreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
+	ManagerCreateShortURLBatch(res, req)
+	return
 }

@@ -24,3 +24,8 @@ type Shortner struct {
 	OriginalURL string
 	CreatedAt   time.Time
 }
+
+type ShortenBatchRequest struct {
+	URL  string
+	Mask string
+}

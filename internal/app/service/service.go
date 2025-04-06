@@ -21,6 +21,7 @@ func Run() error {
 	router.Get("/ping", handler.Ping)
 	router.Post("/", handler.CreateShortURL)
 	router.Post("/api/shorten", handler.CreateShortURLByJSON)
+	router.Post("/api/shorten/batch", handler.CreateShortURLBatch)
 	router.Get("/{id}", handler.ReturnFullURL)
 
 	return http.ListenAndServe(config.FlagRunAddr, router)

@@ -37,7 +37,7 @@ func prefillFromFile() error {
 			return nil
 		}
 		repository.DBHandler.Count++
-		repository.Create(record.ShortURL, record.OriginalURL, false)
+		repository.CreateInMemory(record.ShortURL, record.OriginalURL)
 	}
 }
 

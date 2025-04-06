@@ -1,6 +1,8 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 func (db *DBConnectionStruct) Ping() error {
 	err := db.conn.Ping()
@@ -24,4 +26,19 @@ func (db *DBConnectionStruct) Query(query string) (*sql.Rows, error) {
 		return nil, err
 	}
 	return res, nil
+}
+
+func (db *DBConnectionStruct) BatchCreate(queries []string) error {
+	tx, err := db.conn.Begin()
+	if err != nil {
+		return err
+	}
+	for _, query := range queries {
+		_, err = tx.Exec(query)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	return tx.Commit()
 }
