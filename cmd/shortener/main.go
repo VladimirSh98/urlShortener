@@ -25,7 +25,7 @@ func main() {
 	defer database.DBConnection.CloseConnection()
 	err = database.DBConnection.UpgradeMigrations()
 	if err != nil {
-		log.Fatalf("Database migrations failed: %v", err)
+		log.Printf("Database migrations failed: %v", err)
 	}
 	err = service.Run()
 	if err != nil {

@@ -17,7 +17,6 @@ func createDB(mask string, originalURL string) (sql.Result, error) {
 
 func GetAllRecordsFromDB() ([]Shortner, error) {
 	query := "SELECT * FROM urls"
-	results := make([]Shortner, 0)
 	rows, err := database.DBConnection.Query(query)
 	if err != nil {
 		return nil, err
@@ -26,6 +25,7 @@ func GetAllRecordsFromDB() ([]Shortner, error) {
 	if err != nil {
 		return nil, err
 	}
+	results := make([]Shortner, 0)
 	for rows.Next() {
 		var record Shortner
 		err = rows.Scan(&record.ID, &record.OriginalURL, &record.CreatedAt)
