@@ -3,6 +3,7 @@ package repository
 import (
 	"bufio"
 	"os"
+	"time"
 )
 
 type URLStorageFileData struct {
@@ -16,4 +17,10 @@ type FileHandler struct {
 	writer *bufio.Writer
 	reader *bufio.Reader
 	Count  int
+}
+
+type Shortner struct {
+	Id          string
+	OriginalURL string
+	CreatedAt   time.Time
 }

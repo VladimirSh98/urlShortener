@@ -12,5 +12,6 @@ type defaultConfig struct {
 	BaseURL       string `yaml:"base_url"`
 	DBFilePath    string `yaml:"db_file_path"`
 	DBFileName    string `yaml:"db_file_name"`
-	DatabaseDSN   string `env:"database_dsn"`
+	DatabaseDSN   string `yaml:"database_dsn"`
+	MigrationsDir string `yaml:"migrations_dir"`
 }

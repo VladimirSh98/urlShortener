@@ -10,30 +10,26 @@ import (
 const ShortURLLength = 8
 
 var (
-	FlagResultAddr string
-	FlagRunAddr    string
-	DBFilePath     string
-	DatabaseDSN    string
+	FlagResultAddr      string
+	FlagRunAddr         string
+	DBFilePath          string
+	DatabaseDSN         string
+	DefaultConfigValues defaultConfig
 )
 
 func LoadConfig() error {
 	var cfg Config
 	var err error
-	var defaultConfigValues defaultConfig
 
 	err = env.Parse(&cfg)
 	if err != nil {
 		return err
 	}
-	defaultConfigValues, err = parseDefaultConfigValues()
+	DefaultConfigValues, err = parseDefaultConfigValues()
 	if err != nil {
 		return err
 	}
-	flag.StringVar(&FlagRunAddr, "a", defaultConfigValues.ServerAddress, "Run address")
-	flag.StringVar(&FlagResultAddr, "b", defaultConfigValues.BaseURL, "Result address")
-	flag.StringVar(&DBFilePath, "f", defaultConfigValues.DBFilePath, "DB file path")
-	flag.StringVar(&DatabaseDSN, "d", defaultConfigValues.DatabaseDSN, "DB path")
-	flag.Parse()
+	parseFlag()
 	if cfg.ServerAddress != "" {
 		FlagRunAddr = cfg.ServerAddress
 	}
@@ -44,12 +40,20 @@ func LoadConfig() error {
 		DBFilePath = cfg.DBFilePath
 	}
 	if DBFilePath == "" {
-		DBFilePath = defaultConfigValues.DBFilePath
+		DBFilePath = DefaultConfigValues.DBFilePath
 	}
 	if cfg.DatabaseDSN != "" {
 		DatabaseDSN = cfg.DatabaseDSN
 	}
 	return nil
+}
+
+func parseFlag() {
+	flag.StringVar(&FlagRunAddr, "a", DefaultConfigValues.ServerAddress, "Run address")
+	flag.StringVar(&FlagResultAddr, "b", DefaultConfigValues.BaseURL, "Result address")
+	flag.StringVar(&DBFilePath, "f", DefaultConfigValues.DBFilePath, "DB file path")
+	flag.StringVar(&DatabaseDSN, "d", DefaultConfigValues.DatabaseDSN, "DB path")
+	flag.Parse()
 }
 
 func parseDefaultConfigValues() (defaultConfig, error) {
