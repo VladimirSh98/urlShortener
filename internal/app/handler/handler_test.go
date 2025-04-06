@@ -12,6 +12,8 @@ import (
 	"testing"
 )
 
+type MockCreateInDB struct{}
+
 func TestCreateShortURL(t *testing.T) {
 	type expect struct {
 		status          int
