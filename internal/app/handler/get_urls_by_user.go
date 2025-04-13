@@ -30,6 +30,7 @@ func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	res.Header().Set("Content-Type", "application/json")
 	if len(results) == 0 {
 		res.WriteHeader(http.StatusNoContent)
 		return
@@ -41,7 +42,6 @@ func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 			APIGetByUserIDResponse{ShortURL: result.ID, URL: result.OriginalURL},
 		)
 	}
-	res.Header().Set("Content-Type", "application/json")
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
 		sugar.Warnln("ManagerGetURLsByUser json marshall error", err)
