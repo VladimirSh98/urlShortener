@@ -10,8 +10,8 @@ import (
 
 var UserCount int
 
-const TOKEN_EXP = time.Hour * 3
-const SECRET_KEY = "supersecretkey"
+const TokenExp = time.Hour * 3
+const SecretKey = "supersecretkey"
 
 type customResponseWriter struct {
 	http.ResponseWriter

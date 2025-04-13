@@ -2,6 +2,6 @@ package errors
 
 import "errors"
 
-var ParseTokenError = errors.New("parse token error")
+var ParseTokenError = errors.New("parse token failed")
 
-var NotValidTokenError = errors.New("not valid token error")
+var NotValidTokenError = errors.New("not valid token")
