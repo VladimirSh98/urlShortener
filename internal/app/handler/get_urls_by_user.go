@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository"
 	"go.uber.org/zap"
 	"net/http"
@@ -37,9 +39,10 @@ func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 	}
 	var response []APIGetByUserIDResponse
 	for _, result := range results {
+		ShortURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, result.ID)
 		response = append(
 			response,
-			APIGetByUserIDResponse{ShortURL: result.ID, URL: result.OriginalURL},
+			APIGetByUserIDResponse{ShortURL: ShortURL, URL: result.OriginalURL},
 		)
 	}
 	jsonResponse, err := json.Marshal(response)
