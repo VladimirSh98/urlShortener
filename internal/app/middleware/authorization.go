@@ -30,10 +30,10 @@ func GetUserID(tokenString string) (int, error) {
 		return []byte(SecretKey), nil
 	})
 	if err != nil {
-		return 0, customErr.ParseTokenError
+		return 0, customErr.ErrParseToken
 	}
 	if !token.Valid {
-		return 0, customErr.NotValidTokenError
+		return 0, customErr.ErrNotValidToken
 	}
 	return claims.UserID, nil
 }
@@ -53,7 +53,7 @@ func Authorize(request *http.Request) error {
 		return err
 	} else {
 		userID, err = GetUserID(cookie.Value)
-		if errors.Is(err, customErr.ParseTokenError) || errors.Is(err, customErr.NotValidTokenError) {
+		if errors.Is(err, customErr.ErrParseToken) || errors.Is(err, customErr.ErrNotValidToken) {
 			_, userID, err = BuildJWTString()
 			if err != nil {
 				return err
