@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func CreateShortURL(res http.ResponseWriter, req *http.Request) {
@@ -21,8 +22,21 @@ func CreateShortURL(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
+	var cookie *http.Cookie
+	cookie, err = req.Cookie("userID")
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var UserID int
+	UserID, err = strconv.Atoi(cookie.Value)
+	if err != nil {
+		sugar.Errorln("CreateShortURL convert cookie error", err)
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	urlMask := utils.CreateRandomMask()
-	urlMask, err = repository.Create(urlMask, string(body))
+	urlMask, err = repository.Create(urlMask, string(body), UserID)
 	res.Header().Set("Content-Type", "text/plain")
 	if errors.Is(err, customErr.ErrConstraintViolation) {
 		res.WriteHeader(http.StatusConflict)
@@ -64,4 +78,8 @@ func Ping(res http.ResponseWriter, req *http.Request) {
 
 func CreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 	ManagerCreateShortURLBatch(res, req)
+}
+
+func GetURLsByUser(res http.ResponseWriter, req *http.Request) {
+	ManagerGetURLsByUser(res, req)
 }

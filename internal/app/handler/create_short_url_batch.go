@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
@@ -17,6 +18,19 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		sugar.Errorln("CreateShortURLBatch body read error", err)
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var cookie *http.Cookie
+	cookie, err = req.Cookie("userID")
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var UserID int
+	UserID, err = strconv.Atoi(cookie.Value)
+	if err != nil {
+		sugar.Errorln("CreateShortURLBatch convert cookie error", err)
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -47,8 +61,9 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 		prepareDataForBatch = make([]repository.ShortenBatchRequest, 0)
 		for _, record := range dataWithMask {
 			prepareDataForBatch = append(prepareDataForBatch, repository.ShortenBatchRequest{
-				URL:  record.URL,
-				Mask: record.Mask,
+				URL:    record.URL,
+				Mask:   record.Mask,
+				UserID: UserID,
 			})
 		}
 		repository.BatchCreate(prepareDataForBatch)

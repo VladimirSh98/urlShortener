@@ -10,10 +10,10 @@ import (
 
 var globalURLStorage = map[string]string{}
 
-func Create(mask string, originalURL string) (string, error) {
+func Create(mask string, originalURL string, userID int) (string, error) {
 	var err error
 	sugar := zap.S()
-	_, err = createDB(mask, originalURL)
+	_, err = createDB(mask, originalURL, userID)
 	if err != nil {
 		sugar.Warnln("Failed write to database %v", err)
 		var pgErr *pgconn.PgError

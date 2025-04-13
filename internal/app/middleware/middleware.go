@@ -37,6 +37,7 @@ func (lrw *compressWriter) Write(body []byte) (int, error) {
 
 func Config(h http.Handler) http.Handler {
 	logFn := func(writer http.ResponseWriter, request *http.Request) {
+		var err error
 		var responseStatus, responseSize int
 
 		start := time.Now()
@@ -44,10 +45,17 @@ func Config(h http.Handler) http.Handler {
 		uri := request.RequestURI
 		method := request.Method
 
+		err = Authorize(request)
+		if err != nil {
+			customWriter.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
 		contentEncoding := request.Header.Get("Content-Encoding")
 		sendCompress := strings.Contains(contentEncoding, "gzip")
 		if sendCompress {
-			cr, err := gzip.NewReader(request.Body)
+			var cr *gzip.Reader
+			cr, err = gzip.NewReader(request.Body)
 			if err != nil {
 				customWriter.WriteHeader(http.StatusInternalServerError)
 				return
