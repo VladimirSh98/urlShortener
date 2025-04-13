@@ -45,11 +45,13 @@ func Config(h http.Handler) http.Handler {
 		uri := request.RequestURI
 		method := request.Method
 
-		err = Authorize(request)
+		var token string
+		token, err = Authorize(request)
 		if err != nil {
 			customWriter.WriteHeader(http.StatusUnauthorized)
 			return
 		}
+		http.SetCookie(customWriter, &http.Cookie{Name: "Authorization", Value: token})
 
 		contentEncoding := request.Header.Get("Content-Encoding")
 		sendCompress := strings.Contains(contentEncoding, "gzip")

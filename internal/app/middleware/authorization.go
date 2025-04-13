@@ -38,32 +38,35 @@ func GetUserID(tokenString string) (int, error) {
 	return claims.UserID, nil
 }
 
-func Authorize(request *http.Request) error {
+func Authorize(request *http.Request) (string, error) {
 	var err error
 	var cookie *http.Cookie
 	var userID int
+	var token string
+
 	cookie, err = request.Cookie("Authorization")
 	if errors.Is(err, http.ErrNoCookie) {
-		_, userID, err = BuildJWTString()
+		token, userID, err = BuildJWTString()
 		if err != nil {
-			return err
+			return "", err
 		}
 
 	} else if err != nil {
-		return err
+		return "", err
 	} else {
-		userID, err = GetUserID(cookie.Value)
+		token = cookie.Value
+		userID, err = GetUserID(token)
 		if errors.Is(err, customErr.ErrParseToken) || errors.Is(err, customErr.ErrNotValidToken) {
-			_, userID, err = BuildJWTString()
+			token, userID, err = BuildJWTString()
 			if err != nil {
-				return err
+				return "", err
 			}
 		} else if err != nil {
-			return err
+			return "", err
 		}
 	}
 
 	stringUserID := fmt.Sprintf("%d", userID)
 	request.AddCookie(&http.Cookie{Name: "userID", Value: stringUserID})
-	return nil
+	return token, nil
 }
