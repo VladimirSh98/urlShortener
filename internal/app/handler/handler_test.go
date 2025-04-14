@@ -12,6 +12,8 @@ import (
 	"testing"
 )
 
+type MockCreateInDB struct{}
+
 func TestCreateShortURL(t *testing.T) {
 	type expect struct {
 		status          int
@@ -100,7 +102,7 @@ func TestCreateShortURL(t *testing.T) {
 }
 
 func setupGlobalURLStorageCase() func() {
-	repository.Create("TestCase", "http://example.com", false)
+	repository.CreateInMemory("TestCase", "http://example.com")
 	return func() {
 		repository.Delete("TestCase")
 	}

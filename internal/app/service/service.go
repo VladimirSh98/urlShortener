@@ -18,8 +18,10 @@ func Run() error {
 	sugar.Infoln("Prefill data success")
 	router := chi.NewMux()
 	router.Use(middleware.Config)
+	router.Get("/ping", handler.Ping)
 	router.Post("/", handler.CreateShortURL)
 	router.Post("/api/shorten", handler.CreateShortURLByJSON)
+	router.Post("/api/shorten/batch", handler.CreateShortURLBatch)
 	router.Get("/{id}", handler.ReturnFullURL)
 
 	return http.ListenAndServe(config.FlagRunAddr, router)
