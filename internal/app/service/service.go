@@ -24,6 +24,7 @@ func Run() error {
 	router.Post("/api/shorten/batch", handler.CreateShortURLBatch)
 	router.Get("/{id}", handler.ReturnFullURL)
 	router.Get("/api/user/urls", handler.GetURLsByUser)
+	router.Delete("/api/user/urls", handler.DeleteURLsByID)
 
 	return http.ListenAndServe(config.FlagRunAddr, router)
 }

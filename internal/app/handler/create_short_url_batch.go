@@ -53,30 +53,29 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 	if len(data) == 0 {
 		res.WriteHeader(http.StatusCreated)
 		result = make([]APIShortenBatchResponse, 0)
-	} else {
-		result = make([]APIShortenBatchResponse, 0)
+		return
+	}
 
-		dataWithMask := generateMaskForManyURLs(data)
-		var prepareDataForBatch []repository.ShortenBatchRequest
-		prepareDataForBatch = make([]repository.ShortenBatchRequest, 0)
-		for _, record := range dataWithMask {
-			prepareDataForBatch = append(prepareDataForBatch, repository.ShortenBatchRequest{
-				URL:    record.URL,
-				Mask:   record.Mask,
-				UserID: UserID,
-			})
-		}
-		repository.BatchCreate(prepareDataForBatch)
-		res.Header().Set("Content-Type", "application/json")
-		res.WriteHeader(http.StatusCreated)
-		for _, record := range dataWithMask {
-			responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, record.Mask)
-			result = append(result, APIShortenBatchResponse{
-				CorrelationID: record.CorrelationID,
-				URL:           responseURL,
-			})
-		}
-
+	result = make([]APIShortenBatchResponse, 0)
+	dataWithMask := generateMaskForManyURLs(data)
+	var prepareDataForBatch []repository.ShortenBatchRequest
+	prepareDataForBatch = make([]repository.ShortenBatchRequest, 0)
+	for _, record := range dataWithMask {
+		prepareDataForBatch = append(prepareDataForBatch, repository.ShortenBatchRequest{
+			URL:    record.URL,
+			Mask:   record.Mask,
+			UserID: UserID,
+		})
+	}
+	repository.BatchCreate(prepareDataForBatch)
+	res.Header().Set("Content-Type", "application/json")
+	res.WriteHeader(http.StatusCreated)
+	for _, record := range dataWithMask {
+		responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, record.Mask)
+		result = append(result, APIShortenBatchResponse{
+			CorrelationID: record.CorrelationID,
+			URL:           responseURL,
+		})
 	}
 
 	response, err := json.Marshal(result)

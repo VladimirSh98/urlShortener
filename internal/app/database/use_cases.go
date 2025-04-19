@@ -13,11 +13,11 @@ func (db *DBConnectionStruct) Ping() error {
 	return nil
 }
 
-func (db *DBConnectionStruct) Exec(query string) (sql.Result, error) {
+func (db *DBConnectionStruct) Exec(query string, args ...any) (sql.Result, error) {
 	if db.conn == nil {
 		return nil, errors.New("database connection is not initialized")
 	}
-	res, err := db.conn.Exec(query)
+	res, err := db.conn.Exec(query, args...)
 	if err != nil {
 		return nil, err
 	}
