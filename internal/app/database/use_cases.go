@@ -32,9 +32,12 @@ func (db *DBConnectionStruct) Query(query string) (*sql.Rows, error) {
 	return res, nil
 }
 
-func (db *DBConnectionStruct) QueryRow(query string) *sql.Row {
+func (db *DBConnectionStruct) QueryRow(query string) (*sql.Row, error) {
+	if db.conn == nil {
+		return nil, errors.New("database connection is not initialized")
+	}
 	res := db.conn.QueryRow(query)
-	return res
+	return res, nil
 }
 
 func (db *DBConnectionStruct) BatchCreate(queries []string) error {

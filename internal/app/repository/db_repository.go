@@ -54,10 +54,13 @@ func BatchCreateDB(data []ShortenBatchRequest) error {
 }
 
 func GetByOriginalURLFromBD(originalURL string) (Shorter, error) {
-	query := fmt.Sprintf("SELECT * FROM urls WHERE original_url = '%s' limit 1", originalURL)
-	row := database.DBConnection.QueryRow(query)
 	var record Shorter
-	err := row.Scan(&record.ID, &record.OriginalURL, &record.CreatedAt, &record.UserID, &record.Archived)
+	query := fmt.Sprintf("SELECT * FROM urls WHERE original_url = '%s' limit 1", originalURL)
+	row, err := database.DBConnection.QueryRow(query)
+	if err != nil {
+		return record, err
+	}
+	err = row.Scan(&record.ID, &record.OriginalURL, &record.CreatedAt, &record.UserID, &record.Archived)
 	if err != nil {
 		return record, err
 	}
@@ -88,10 +91,13 @@ func GetByUserID(userID int) ([]Shorter, error) {
 }
 
 func GetByShortURLFromBD(shortURL string) (Shorter, error) {
-	query := fmt.Sprintf("SELECT * FROM urls WHERE id = '%s' limit 1", shortURL)
-	row := database.DBConnection.QueryRow(query)
 	var record Shorter
-	err := row.Scan(&record.ID, &record.OriginalURL, &record.CreatedAt, &record.UserID, &record.Archived)
+	query := fmt.Sprintf("SELECT * FROM urls WHERE id = '%s' limit 1", shortURL)
+	row, err := database.DBConnection.QueryRow(query)
+	if err != nil {
+		return record, err
+	}
+	err = row.Scan(&record.ID, &record.OriginalURL, &record.CreatedAt, &record.UserID, &record.Archived)
 	if err != nil {
 		return record, err
 	}
