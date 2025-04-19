@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/lib/pq"
-	_ "github.com/lib/pq"
 )
 
 func createDB(mask string, originalURL string, userID int) (sql.Result, error) {
@@ -20,7 +19,6 @@ func createDB(mask string, originalURL string, userID int) (sql.Result, error) {
 func GetAllRecordsFromDB() ([]Shorter, error) {
 	query := "SELECT * FROM urls"
 	rows, err := database.DBConnection.Query(query)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +67,6 @@ func GetByOriginalURLFromBD(originalURL string) (Shorter, error) {
 func GetByUserID(userID int) ([]Shorter, error) {
 	query := fmt.Sprintf("SELECT * FROM urls WHERE user_id = '%d'", userID)
 	rows, err := database.DBConnection.Query(query)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
