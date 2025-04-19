@@ -13,11 +13,11 @@ func (db *DBConnectionStruct) Ping() error {
 	return nil
 }
 
-func (db *DBConnectionStruct) Exec(query string) (sql.Result, error) {
+func (db *DBConnectionStruct) Exec(query string, args ...any) (sql.Result, error) {
 	if db.conn == nil {
 		return nil, errors.New("database connection is not initialized")
 	}
-	res, err := db.conn.Exec(query)
+	res, err := db.conn.Exec(query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -32,9 +32,12 @@ func (db *DBConnectionStruct) Query(query string) (*sql.Rows, error) {
 	return res, nil
 }
 
-func (db *DBConnectionStruct) QueryRow(query string) *sql.Row {
+func (db *DBConnectionStruct) QueryRow(query string) (*sql.Row, error) {
+	if db.conn == nil {
+		return nil, errors.New("database connection is not initialized")
+	}
 	res := db.conn.QueryRow(query)
-	return res
+	return res, nil
 }
 
 func (db *DBConnectionStruct) BatchCreate(queries []string) error {

@@ -19,13 +19,16 @@ type FileHandler struct {
 	Count  int
 }
 
-type Shortner struct {
+type Shorter struct {
 	ID          string
 	OriginalURL string
 	CreatedAt   time.Time
+	UserID      int
+	Archived    bool
 }
 
 type ShortenBatchRequest struct {
-	URL  string
-	Mask string
+	URL    string
+	Mask   string
+	UserID int
 }

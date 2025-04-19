@@ -12,13 +12,27 @@ import (
 	"go.uber.org/zap"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
-		sugar.Errorln("CreateShortURLByJSON body read error", err)
+		sugar.Errorln("ManagerCreateShortURLByJSON body read error", err)
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var cookie *http.Cookie
+	cookie, err = req.Cookie("userID")
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	var UserID int
+	UserID, err = strconv.Atoi(cookie.Value)
+	if err != nil {
+		sugar.Errorln("ManagerCreateShortURLByJSON convert cookie error", err)
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -26,19 +40,19 @@ func ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 	var data APIShortenRequestData
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		sugar.Errorln("CreateShortURLByJSON json unmarshall error", err)
+		sugar.Errorln("ManagerCreateShortURLByJSON json unmarshall error", err)
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	v := validator.New()
 	err = v.Struct(data)
 	if err != nil {
-		sugar.Warnln("CreateShortURLByJSON validation error", err)
+		sugar.Warnln("ManagerCreateShortURLByJSON validation error", err)
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	urlMask, err = repository.Create(urlMask, data.URL)
+	urlMask, err = repository.Create(urlMask, data.URL, UserID)
 	res.Header().Set("Content-Type", "application/json")
 	if errors.Is(err, customErr.ErrConstraintViolation) {
 		res.WriteHeader(http.StatusConflict)
@@ -48,13 +62,13 @@ func ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
 	response, err := json.Marshal(APIShortenResponseData{Result: responseURL})
 	if err != nil {
-		sugar.Warnln("CreateShortURLByJSON json marshall error", err)
+		sugar.Warnln("ManagerCreateShortURLByJSON json marshall error", err)
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	_, err = res.Write(response)
 	if err != nil {
-		sugar.Errorln("CreateShortURLByJSON response error", err)
+		sugar.Errorln("ManagerCreateShortURLByJSON response error", err)
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}

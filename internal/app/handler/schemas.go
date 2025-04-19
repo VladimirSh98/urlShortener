@@ -22,3 +22,8 @@ type APIShortenBatchRequestWithMask struct {
 	APIShortenBatchRequest
 	Mask string
 }
+
+type APIGetByUserIDResponse struct {
+	ShortURL string `json:"short_url"`
+	URL      string `json:"original_url"`
+}

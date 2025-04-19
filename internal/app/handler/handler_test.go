@@ -87,6 +87,7 @@ func TestCreateShortURL(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			request := httptest.NewRequest(test.testRequest.method, test.testRequest.URL, strings.NewReader(test.testRequest.body))
 			w := httptest.NewRecorder()
+			request.AddCookie(&http.Cookie{Name: "userID", Value: "1"})
 			CreateShortURL(w, request)
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")
@@ -211,6 +212,7 @@ func TestCreateShortURLByJSON(t *testing.T) {
 			request := httptest.NewRequest(
 				http.MethodPost, "/api/shorten", bytes.NewReader(jsonBody),
 			)
+			request.AddCookie(&http.Cookie{Name: "userID", Value: "1"})
 			w := httptest.NewRecorder()
 			CreateShortURLByJSON(w, request)
 			result := w.Result()

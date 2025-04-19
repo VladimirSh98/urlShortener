@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository"
 )
 
@@ -48,6 +49,9 @@ func prefillFromDB() error {
 	}
 	for _, result := range results {
 		repository.CreateInMemory(result.ID, result.OriginalURL)
+		if middleware.UserCount < result.UserID {
+			middleware.UserCount = result.UserID
+		}
 	}
 	return nil
 }
