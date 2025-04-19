@@ -50,12 +50,6 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	var result []APIShortenBatchResponse
-	if len(data) == 0 {
-		res.WriteHeader(http.StatusCreated)
-		result = make([]APIShortenBatchResponse, 0)
-		return
-	}
-
 	result = make([]APIShortenBatchResponse, 0)
 	dataWithMask := generateMaskForManyURLs(data)
 	var prepareDataForBatch []repository.ShortenBatchRequest
