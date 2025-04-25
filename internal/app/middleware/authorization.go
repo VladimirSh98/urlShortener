@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
@@ -39,7 +38,7 @@ func GetUserID(tokenString string) (int, error) {
 	return int(claims.UserID), nil
 }
 
-func Authorize(request *http.Request) (string, error) {
+func Authorize(request *http.Request) (string, int, error) {
 	var err error
 	var cookie *http.Cookie
 	var userID int
@@ -49,25 +48,23 @@ func Authorize(request *http.Request) (string, error) {
 	if errors.Is(err, http.ErrNoCookie) {
 		token, userID, err = BuildJWTString()
 		if err != nil {
-			return "", err
+			return "", 0, err
 		}
 
 	} else if err != nil {
-		return "", err
+		return "", 0, err
 	} else {
 		token = cookie.Value
 		userID, err = GetUserID(token)
 		if errors.Is(err, customErr.ErrParseToken) || errors.Is(err, customErr.ErrNotValidToken) {
 			token, userID, err = BuildJWTString()
 			if err != nil {
-				return "", err
+				return "", 0, err
 			}
 		} else if err != nil {
-			return "", err
+			return "", 0, err
 		}
 	}
 
-	stringUserID := fmt.Sprintf("%d", userID)
-	request.AddCookie(&http.Cookie{Name: "userID", Value: stringUserID})
-	return token, nil
+	return token, userID, nil
 }

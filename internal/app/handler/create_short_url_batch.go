@@ -12,7 +12,6 @@ import (
 	"go.uber.org/zap"
 	"io"
 	"net/http"
-	"strconv"
 )
 
 func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
@@ -23,20 +22,7 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	var cookie *http.Cookie
-	cookie, err = req.Cookie("userID")
-	if err != nil {
-		res.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	var UserID int
-	UserID, err = strconv.Atoi(cookie.Value)
-	if err != nil {
-		sugar.Errorln("CreateShortURLBatch convert cookie error", err)
-		res.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
+	UserID := req.Context().Value("userID").(int)
 	var data []APIShortenBatchRequest
 	err = json.Unmarshal(body, &data)
 	if err != nil {

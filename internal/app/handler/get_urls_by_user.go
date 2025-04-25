@@ -9,26 +9,13 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"go.uber.org/zap"
 	"net/http"
-	"strconv"
 )
 
 func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 	var err error
-	var cookie *http.Cookie
 
 	sugar := zap.S()
-	cookie, err = req.Cookie("userID")
-	if err != nil {
-		res.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-	var UserID int
-	UserID, err = strconv.Atoi(cookie.Value)
-	if err != nil {
-		sugar.Errorln("ManagerGetURLsByUser convert cookie error", err)
-		res.WriteHeader(http.StatusUnauthorized)
-		return
-	}
+	UserID := req.Context().Value("userID").(int)
 	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	results, err := getService.GetByUserID(UserID)
 	if err != nil {

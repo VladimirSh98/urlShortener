@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
 	"github.com/stretchr/testify/assert"
@@ -28,45 +29,45 @@ func TestCreateShortURL(t *testing.T) {
 		expect      expect
 		testRequest testRequest
 	}{
-		//{
-		//	description: "Test #1. Wrong request",
-		//	expect: expect{
-		//		status:          http.StatusBadRequest,
-		//		contentType:     "",
-		//		checkBodyLength: false,
-		//	},
-		//	testRequest: testRequest{
-		//		URL:    "/",
-		//		method: http.MethodPatch,
-		//		body:   "",
-		//	},
-		//},
-		//{
-		//	description: "Test #2. Wrong request",
-		//	expect: expect{
-		//		status:          http.StatusBadRequest,
-		//		contentType:     "",
-		//		checkBodyLength: false,
-		//	},
-		//	testRequest: testRequest{
-		//		URL:    "/qwe",
-		//		method: http.MethodPost,
-		//		body:   "",
-		//	},
-		//},
-		//{
-		//	description: "Test #3. Wrong body",
-		//	expect: expect{
-		//		status:          http.StatusBadRequest,
-		//		contentType:     "",
-		//		checkBodyLength: false,
-		//	},
-		//	testRequest: testRequest{
-		//		URL:    "/",
-		//		method: http.MethodPost,
-		//		body:   "",
-		//	},
-		//},
+		{
+			description: "Test #1. Wrong request",
+			expect: expect{
+				status:          http.StatusBadRequest,
+				contentType:     "",
+				checkBodyLength: false,
+			},
+			testRequest: testRequest{
+				URL:    "/",
+				method: http.MethodPatch,
+				body:   "",
+			},
+		},
+		{
+			description: "Test #2. Wrong request",
+			expect: expect{
+				status:          http.StatusBadRequest,
+				contentType:     "",
+				checkBodyLength: false,
+			},
+			testRequest: testRequest{
+				URL:    "/qwe",
+				method: http.MethodPost,
+				body:   "",
+			},
+		},
+		{
+			description: "Test #3. Wrong body",
+			expect: expect{
+				status:          http.StatusBadRequest,
+				contentType:     "",
+				checkBodyLength: false,
+			},
+			testRequest: testRequest{
+				URL:    "/",
+				method: http.MethodPost,
+				body:   "",
+			},
+		},
 		{
 			description: "Test #4. Success",
 			expect: expect{
@@ -85,8 +86,8 @@ func TestCreateShortURL(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			request := httptest.NewRequest(test.testRequest.method, test.testRequest.URL, strings.NewReader(test.testRequest.body))
 			w := httptest.NewRecorder()
-			request.AddCookie(&http.Cookie{Name: "userID", Value: "1"})
-			ManagerCreateShortURL(w, request)
+			ctx := context.WithValue(request.Context(), "userID", 1)
+			ManagerCreateShortURL(w, request.WithContext(ctx))
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")
 			defer result.Body.Close()
@@ -210,9 +211,9 @@ func TestCreateShortURLByJSON(t *testing.T) {
 			request := httptest.NewRequest(
 				http.MethodPost, "/api/shorten", bytes.NewReader(jsonBody),
 			)
-			request.AddCookie(&http.Cookie{Name: "userID", Value: "1"})
+			ctx := context.WithValue(request.Context(), "userID", 1)
 			w := httptest.NewRecorder()
-			ManagerCreateShortURLByJSON(w, request)
+			ManagerCreateShortURLByJSON(w, request.WithContext(ctx))
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")
 			defer result.Body.Close()

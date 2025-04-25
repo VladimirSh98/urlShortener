@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"compress/gzip"
+	"context"
 	"go.uber.org/zap"
 	"net/http"
 	"strings"
@@ -24,11 +25,13 @@ func Config(h http.Handler) http.Handler {
 		method := request.Method
 
 		var token string
-		token, err = Authorize(request)
+		var userID int
+		token, userID, err = Authorize(request)
 		if err != nil {
 			customWriter.WriteHeader(http.StatusUnauthorized)
 			return
 		}
+		ctx := context.WithValue(request.Context(), "userID", userID)
 		http.SetCookie(customWriter, &http.Cookie{Name: "Authorization", Value: token})
 
 		contentEncoding := request.Header.Get("Content-Encoding")
@@ -54,11 +57,11 @@ func Config(h http.Handler) http.Handler {
 				Writer:         gzipWriter,
 			}
 			customCompressWriter.Header().Set("Content-Encoding", "gzip")
-			h.ServeHTTP(&customCompressWriter, request)
+			h.ServeHTTP(&customCompressWriter, request.WithContext(ctx))
 			responseStatus = customCompressWriter.Status
 			responseSize = customCompressWriter.Size
 		} else {
-			h.ServeHTTP(customWriter, request)
+			h.ServeHTTP(customWriter, request.WithContext(ctx))
 			responseStatus = customWriter.Status
 			responseSize = customWriter.Size
 		}
