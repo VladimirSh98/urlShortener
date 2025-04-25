@@ -10,7 +10,7 @@ import (
 )
 
 func Run() error {
-	err := prefill()
+	err := Prefill()
 	sugar := zap.S()
 	if err != nil {
 		sugar.Warnln("Prefill data error %v", err)
@@ -19,12 +19,12 @@ func Run() error {
 	router := chi.NewMux()
 	router.Use(middleware.Config)
 	router.Get("/ping", handler.Ping)
-	router.Post("/", handler.CreateShortURL)
-	router.Post("/api/shorten", handler.CreateShortURLByJSON)
-	router.Post("/api/shorten/batch", handler.CreateShortURLBatch)
-	router.Get("/{id}", handler.ReturnFullURL)
-	router.Get("/api/user/urls", handler.GetURLsByUser)
-	router.Delete("/api/user/urls", handler.DeleteURLsByID)
+	router.Post("/", handler.ManagerCreateShortURL)
+	router.Post("/api/shorten", handler.ManagerCreateShortURLByJSON)
+	router.Post("/api/shorten/batch", handler.ManagerCreateShortURLBatch)
+	router.Get("/{id}", handler.ManagerReturnFullURL)
+	router.Get("/api/user/urls", handler.ManagerGetURLsByUser)
+	router.Delete("/api/user/urls", handler.ManagerDeleteURLsByID)
 
 	return http.ListenAndServe(config.FlagRunAddr, router)
 }

@@ -8,31 +8,9 @@ import (
 	"time"
 )
 
-func createCustomResponseWriter(w http.ResponseWriter) *customResponseWriter {
+func createCustomResponseWriter(w http.ResponseWriter) *CustomResponseWriter {
 
-	return &customResponseWriter{ResponseWriter: w, size: 0, status: 200}
-}
-
-func (lrw *customResponseWriter) WriteHeader(code int) {
-	lrw.status = code
-	lrw.once.Do(func() { lrw.ResponseWriter.WriteHeader(code) })
-}
-
-func (lrw *customResponseWriter) Write(body []byte) (int, error) {
-	n, err := lrw.ResponseWriter.Write(body)
-	lrw.size += n
-	return n, err
-}
-
-func (lrw *compressWriter) WriteHeader(code int) {
-	lrw.status = code
-	lrw.once.Do(func() { lrw.ResponseWriter.WriteHeader(code) })
-}
-
-func (lrw *compressWriter) Write(body []byte) (int, error) {
-	n, err := lrw.Writer.Write(body)
-	lrw.size += n
-	return n, err
+	return &CustomResponseWriter{ResponseWriter: w, Size: 0, Status: 200}
 }
 
 func Config(h http.Handler) http.Handler {
@@ -69,20 +47,20 @@ func Config(h http.Handler) http.Handler {
 		if strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
 			gzipWriter := gzip.NewWriter(customWriter)
 			defer gzipWriter.Close()
-			customCompressWriter := compressWriter{
+			customCompressWriter := CompressWriter{
 				ResponseWriter: customWriter.ResponseWriter,
-				size:           customWriter.size,
-				status:         customWriter.status,
+				Size:           customWriter.Size,
+				Status:         customWriter.Status,
 				Writer:         gzipWriter,
 			}
 			customCompressWriter.Header().Set("Content-Encoding", "gzip")
 			h.ServeHTTP(&customCompressWriter, request)
-			responseStatus = customCompressWriter.status
-			responseSize = customCompressWriter.size
+			responseStatus = customCompressWriter.Status
+			responseSize = customCompressWriter.Size
 		} else {
 			h.ServeHTTP(customWriter, request)
-			responseStatus = customWriter.status
-			responseSize = customWriter.size
+			responseStatus = customWriter.Status
+			responseSize = customWriter.Size
 		}
 
 		duration := time.Since(start)

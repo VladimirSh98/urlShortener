@@ -2,7 +2,10 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/VladimirSh98/urlShortener/internal/app/repository"
+	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten_service"
+
 	"go.uber.org/zap"
 	"io"
 	"net/http"
@@ -20,14 +23,14 @@ func ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
 	var cookie *http.Cookie
 	cookie, err = req.Cookie("userID")
 	if err != nil {
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	var UserID int
 	UserID, err = strconv.Atoi(cookie.Value)
 	if err != nil {
 		sugar.Errorln("CreateShortURL convert cookie error", err)
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	var data []string
@@ -37,6 +40,7 @@ func ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	go repository.BatchUpdate(data, UserID)
+	getService := shorten_service.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	go getService.BatchUpdate(data, UserID)
 	res.WriteHeader(http.StatusAccepted)
 }

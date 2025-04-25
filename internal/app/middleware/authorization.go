@@ -6,11 +6,12 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 	"net/http"
+	"sync/atomic"
 	"time"
 )
 
 func BuildJWTString() (string, int, error) {
-	UserCount++
+	atomic.AddInt64(&UserCount, 1)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExp)),
@@ -21,7 +22,7 @@ func BuildJWTString() (string, int, error) {
 	if err != nil {
 		return "", 0, err
 	}
-	return tokenString, UserCount, nil
+	return tokenString, int(UserCount), nil
 }
 
 func GetUserID(tokenString string) (int, error) {
@@ -35,7 +36,7 @@ func GetUserID(tokenString string) (int, error) {
 	if !token.Valid {
 		return 0, customErr.ErrNotValidToken
 	}
-	return claims.UserID, nil
+	return int(claims.UserID), nil
 }
 
 func Authorize(request *http.Request) (string, error) {

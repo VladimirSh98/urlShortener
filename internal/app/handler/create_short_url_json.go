@@ -5,8 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
+	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
-	"github.com/VladimirSh98/urlShortener/internal/app/repository"
+	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten_service"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
@@ -26,14 +28,14 @@ func ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 	var cookie *http.Cookie
 	cookie, err = req.Cookie("userID")
 	if err != nil {
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	var UserID int
 	UserID, err = strconv.Atoi(cookie.Value)
 	if err != nil {
 		sugar.Errorln("ManagerCreateShortURLByJSON convert cookie error", err)
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
@@ -52,7 +54,8 @@ func ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	urlMask, err = repository.Create(urlMask, data.URL, UserID)
+	getService := shorten_service.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	urlMask, err = getService.Create(urlMask, data.URL, UserID)
 	res.Header().Set("Content-Type", "application/json")
 	if errors.Is(err, customErr.ErrConstraintViolation) {
 		res.WriteHeader(http.StatusConflict)

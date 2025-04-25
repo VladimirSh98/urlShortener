@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
-	"github.com/VladimirSh98/urlShortener/internal/app/repository"
+	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten_service"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
@@ -24,14 +26,14 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 	var cookie *http.Cookie
 	cookie, err = req.Cookie("userID")
 	if err != nil {
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	var UserID int
 	UserID, err = strconv.Atoi(cookie.Value)
 	if err != nil {
 		sugar.Errorln("CreateShortURLBatch convert cookie error", err)
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
@@ -52,16 +54,17 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 	var result []APIShortenBatchResponse
 	result = make([]APIShortenBatchResponse, 0)
 	dataWithMask := generateMaskForManyURLs(data)
-	var prepareDataForBatch []repository.ShortenBatchRequest
-	prepareDataForBatch = make([]repository.ShortenBatchRequest, 0)
+	var prepareDataForBatch []dbRepo.ShortenBatchRequest
+	prepareDataForBatch = make([]dbRepo.ShortenBatchRequest, 0)
 	for _, record := range dataWithMask {
-		prepareDataForBatch = append(prepareDataForBatch, repository.ShortenBatchRequest{
+		prepareDataForBatch = append(prepareDataForBatch, dbRepo.ShortenBatchRequest{
 			URL:    record.URL,
 			Mask:   record.Mask,
 			UserID: UserID,
 		})
 	}
-	repository.BatchCreate(prepareDataForBatch)
+	getService := shorten_service.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService.BatchCreate(prepareDataForBatch)
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(http.StatusCreated)
 	for _, record := range dataWithMask {

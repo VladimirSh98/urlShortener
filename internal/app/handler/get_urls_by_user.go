@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
-	"github.com/VladimirSh98/urlShortener/internal/app/repository"
+	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten_service"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
@@ -17,17 +19,18 @@ func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	cookie, err = req.Cookie("userID")
 	if err != nil {
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 	var UserID int
 	UserID, err = strconv.Atoi(cookie.Value)
 	if err != nil {
 		sugar.Errorln("ManagerGetURLsByUser convert cookie error", err)
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	results, err := repository.GetByUserID(UserID)
+	getService := shorten_service.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	results, err := getService.GetByUserID(UserID)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		return
@@ -48,7 +51,7 @@ func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
 		sugar.Warnln("ManagerGetURLsByUser json marshall error", err)
-		res.WriteHeader(http.StatusBadRequest)
+		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	_, err = res.Write(jsonResponse)
