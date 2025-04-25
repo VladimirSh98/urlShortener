@@ -1,4 +1,4 @@
-package shortenService
+package shorten
 
 func (s ShortenService) Ping() error {
 	err := s.Repo.Ping()

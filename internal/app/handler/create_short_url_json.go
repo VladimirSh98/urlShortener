@@ -54,7 +54,7 @@ func ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	urlMask, err = getService.Create(urlMask, data.URL, UserID)
 	res.Header().Set("Content-Type", "application/json")
 	if errors.Is(err, customErr.ErrConstraintViolation) {

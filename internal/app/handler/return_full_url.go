@@ -18,7 +18,7 @@ func ManagerReturnFullURL(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	recordFromDB, err := getService.GetByShortURL(urlID)
 	if err != nil {
 		sugar.Warnln("ReturnFullURL database error", err)

@@ -8,7 +8,7 @@ import (
 )
 
 func Ping(res http.ResponseWriter, req *http.Request) {
-	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	err := getService.Ping()
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)

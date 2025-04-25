@@ -1,4 +1,4 @@
-package shortenService
+package shorten
 
 import (
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"

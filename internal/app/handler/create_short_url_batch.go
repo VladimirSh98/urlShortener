@@ -63,7 +63,7 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 			UserID: UserID,
 		})
 	}
-	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	getService.BatchCreate(prepareDataForBatch)
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(http.StatusCreated)

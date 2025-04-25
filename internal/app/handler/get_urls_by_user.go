@@ -29,7 +29,7 @@ func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	results, err := getService.GetByUserID(UserID)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)

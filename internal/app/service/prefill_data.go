@@ -47,7 +47,7 @@ func prefillFromFile() error {
 }
 
 func prefillFromDB() error {
-	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	results, err := getService.GetAllRecords()
 	if err != nil {
 		return err

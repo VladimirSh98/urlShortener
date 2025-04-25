@@ -40,7 +40,7 @@ func ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	go getService.BatchUpdate(data, UserID)
 	res.WriteHeader(http.StatusAccepted)
 }
