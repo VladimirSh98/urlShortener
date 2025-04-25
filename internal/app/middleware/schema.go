@@ -10,6 +10,10 @@ import (
 
 var UserCount int64
 
+type contextKey string
+
+const UserIDKey contextKey = "userID"
+
 const TokenExp = time.Hour * 3
 const SecretKey = "supersecretkey"
 

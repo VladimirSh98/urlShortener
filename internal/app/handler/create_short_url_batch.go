@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
@@ -22,7 +23,7 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	UserID := req.Context().Value("userID").(int)
+	UserID := req.Context().Value(middleware.UserIDKey).(int)
 	var data []APIShortenBatchRequest
 	err = json.Unmarshal(body, &data)
 	if err != nil {

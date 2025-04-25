@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -86,7 +87,7 @@ func TestCreateShortURL(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			request := httptest.NewRequest(test.testRequest.method, test.testRequest.URL, strings.NewReader(test.testRequest.body))
 			w := httptest.NewRecorder()
-			ctx := context.WithValue(request.Context(), "userID", 1)
+			ctx := context.WithValue(request.Context(), middleware.UserIDKey, 1)
 			ManagerCreateShortURL(w, request.WithContext(ctx))
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")
@@ -211,7 +212,7 @@ func TestCreateShortURLByJSON(t *testing.T) {
 			request := httptest.NewRequest(
 				http.MethodPost, "/api/shorten", bytes.NewReader(jsonBody),
 			)
-			ctx := context.WithValue(request.Context(), "userID", 1)
+			ctx := context.WithValue(request.Context(), middleware.UserIDKey, 1)
 			w := httptest.NewRecorder()
 			ManagerCreateShortURLByJSON(w, request.WithContext(ctx))
 			result := w.Result()

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"go.uber.org/zap"
@@ -15,7 +16,7 @@ func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 	var err error
 
 	sugar := zap.S()
-	UserID := req.Context().Value("userID").(int)
+	UserID := req.Context().Value(middleware.UserIDKey).(int)
 	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	results, err := getService.GetByUserID(UserID)
 	if err != nil {

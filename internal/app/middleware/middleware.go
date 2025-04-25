@@ -31,7 +31,7 @@ func Config(h http.Handler) http.Handler {
 			customWriter.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		ctx := context.WithValue(request.Context(), "userID", userID)
+		ctx := context.WithValue(request.Context(), UserIDKey, userID)
 		http.SetCookie(customWriter, &http.Cookie{Name: "Authorization", Value: token})
 
 		contentEncoding := request.Header.Get("Content-Encoding")
