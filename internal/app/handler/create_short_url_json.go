@@ -8,7 +8,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten_service"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shortenService"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
@@ -54,7 +54,7 @@ func ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	urlMask := utils.CreateRandomMask()
-	getService := shorten_service.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	urlMask, err = getService.Create(urlMask, data.URL, UserID)
 	res.Header().Set("Content-Type", "application/json")
 	if errors.Is(err, customErr.ErrConstraintViolation) {

@@ -1,4 +1,4 @@
-package shorten_service
+package shortenService
 
 func (s ShortenService) BatchUpdate(data []string, userID int) error {
 	err := s.Repo.BatchUpdate(data, userID)

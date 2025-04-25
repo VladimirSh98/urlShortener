@@ -7,7 +7,7 @@ import (
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	fileRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/file"
 	memoryRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten_service"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shortenService"
 )
 
 func Prefill() error {
@@ -47,7 +47,7 @@ func prefillFromFile() error {
 }
 
 func prefillFromDB() error {
-	getService := shorten_service.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	results, err := getService.GetAllRecords()
 	if err != nil {
 		return err

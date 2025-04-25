@@ -6,7 +6,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten_service"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shortenService"
 	"go.uber.org/zap"
 	"net/http"
 	"strconv"
@@ -29,7 +29,7 @@ func ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	getService := shorten_service.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	results, err := getService.GetByUserID(UserID)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)

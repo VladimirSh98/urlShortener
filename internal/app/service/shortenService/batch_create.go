@@ -1,4 +1,4 @@
-package shorten_service
+package shortenService
 
 import (
 	dbrepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"

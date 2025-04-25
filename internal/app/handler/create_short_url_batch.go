@@ -6,7 +6,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten_service"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shortenService"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
@@ -63,7 +63,7 @@ func ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {
 			UserID: UserID,
 		})
 	}
-	getService := shorten_service.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	getService := shortenService.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
 	getService.BatchCreate(prepareDataForBatch)
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(http.StatusCreated)
