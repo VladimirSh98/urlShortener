@@ -6,7 +6,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shortenService"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"

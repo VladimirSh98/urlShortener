@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shortenService"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 
 	"go.uber.org/zap"
 	"io"

@@ -7,7 +7,7 @@ import (
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	fileRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/file"
 	memoryRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shortenService"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 )
 
 func Prefill() error {

@@ -6,7 +6,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shortenService"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
