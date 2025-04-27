@@ -1,15 +1,12 @@
 package handler
 
 import (
-	"github.com/VladimirSh98/urlShortener/internal/app/database"
-	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"go.uber.org/zap"
 	"net/http"
 )
 
-func ManagerReturnFullURL(res http.ResponseWriter, req *http.Request) {
+func (h *Handler) ManagerReturnFullURL(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	urlID := req.PathValue("id")
 	resultURL, ok := memory.Get(urlID)
@@ -18,8 +15,7 @@ func ManagerReturnFullURL(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
-	recordFromDB, err := getService.GetByShortURL(urlID)
+	recordFromDB, err := h.service.GetByShortURL(urlID)
 	if err != nil {
 		sugar.Warnln("ReturnFullURL database error", err)
 	}

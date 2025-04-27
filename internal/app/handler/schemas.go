@@ -1,5 +1,15 @@
 package handler
 
+import "github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
+
+type Handler struct {
+	service shorten.ShortenServiceInterface
+}
+
+func NewHandler(service shorten.ShortenServiceInterface) *Handler {
+	return &Handler{service: service}
+}
+
 type APIShortenRequestData struct {
 	URL string `json:"url" validate:"required"`
 }

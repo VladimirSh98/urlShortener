@@ -3,11 +3,8 @@ package handler
 import (
 	"fmt"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
-	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
-	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -15,7 +12,7 @@ import (
 	"net/http"
 )
 
-func ManagerCreateShortURL(res http.ResponseWriter, req *http.Request) {
+func (h *Handler) ManagerCreateShortURL(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	body, err := io.ReadAll(req.Body)
 	if err != nil || len(body) == 0 {
@@ -25,8 +22,7 @@ func ManagerCreateShortURL(res http.ResponseWriter, req *http.Request) {
 	}
 	UserID := req.Context().Value(middleware.UserIDKey).(int)
 	urlMask := utils.CreateRandomMask()
-	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
-	urlMask, err = getService.Create(urlMask, string(body), UserID)
+	urlMask, err = h.service.Create(urlMask, string(body), UserID)
 	res.Header().Set("Content-Type", "text/plain")
 	if errors.Is(err, customErr.ErrConstraintViolation) {
 		res.WriteHeader(http.StatusConflict)

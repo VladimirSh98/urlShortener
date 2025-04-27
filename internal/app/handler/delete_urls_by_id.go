@@ -2,17 +2,13 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
-	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
-
 	"go.uber.org/zap"
 	"io"
 	"net/http"
 )
 
-func ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
+func (h *Handler) ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	body, err := io.ReadAll(req.Body)
 	if err != nil || len(body) == 0 {
@@ -28,7 +24,6 @@ func ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
-	go getService.BatchUpdate(data, UserID)
+	go h.service.BatchUpdate(data, UserID)
 	res.WriteHeader(http.StatusAccepted)
 }
