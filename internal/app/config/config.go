@@ -14,7 +14,7 @@ var (
 	FlagRunAddr         string
 	DBFilePath          string
 	DatabaseDSN         string
-	DefaultConfigValues defaultConfig
+	DefaultConfigValues DefaultConfig
 )
 
 func LoadConfig() error {
@@ -56,16 +56,16 @@ func parseFlag() {
 	flag.Parse()
 }
 
-func parseDefaultConfigValues() (defaultConfig, error) {
+func parseDefaultConfigValues() (DefaultConfig, error) {
 	defaultData, err := os.ReadFile("default_config.yaml")
 	if err != nil {
-		return defaultConfig{}, err
+		return DefaultConfig{}, err
 	}
 
-	var defaultConfigValues defaultConfig
+	var defaultConfigValues DefaultConfig
 	err = yaml.Unmarshal(defaultData, &defaultConfigValues)
 	if err != nil {
-		return defaultConfig{}, err
+		return DefaultConfig{}, err
 	}
 	return defaultConfigValues, nil
 }

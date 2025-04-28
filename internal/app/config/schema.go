@@ -7,7 +7,7 @@ type Config struct {
 	DatabaseDSN   string `env:"DATABASE_DSN"`
 }
 
-type defaultConfig struct {
+type DefaultConfig struct {
 	ServerAddress string `yaml:"server_address"`
 	BaseURL       string `yaml:"base_url"`
 	DBFilePath    string `yaml:"db_file_path"`

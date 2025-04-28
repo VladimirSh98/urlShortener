@@ -2,8 +2,13 @@ package handler
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"github.com/VladimirSh98/urlShortener/internal/app/repository"
+	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
+	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -11,8 +16,6 @@ import (
 	"strings"
 	"testing"
 )
-
-type MockCreateInDB struct{}
 
 func TestCreateShortURL(t *testing.T) {
 	type expect struct {
@@ -87,7 +90,11 @@ func TestCreateShortURL(t *testing.T) {
 		t.Run(test.description, func(t *testing.T) {
 			request := httptest.NewRequest(test.testRequest.method, test.testRequest.URL, strings.NewReader(test.testRequest.body))
 			w := httptest.NewRecorder()
-			CreateShortURL(w, request)
+			ctx := context.WithValue(request.Context(), middleware.UserIDKey, 1)
+			repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
+			service := shorten.NewShortenService(repo)
+			customHandler := NewHandler(service)
+			customHandler.ManagerCreateShortURL(w, request.WithContext(ctx))
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")
 			defer result.Body.Close()
@@ -102,9 +109,9 @@ func TestCreateShortURL(t *testing.T) {
 }
 
 func setupGlobalURLStorageCase() func() {
-	repository.CreateInMemory("TestCase", "http://example.com")
+	memory.CreateInMemory("TestCase", "http://example.com")
 	return func() {
-		repository.Delete("TestCase")
+		memory.Delete("TestCase")
 	}
 }
 
@@ -142,7 +149,10 @@ func TestReturnFullURL(t *testing.T) {
 			request := httptest.NewRequest(http.MethodGet, test.URL, nil)
 			request.SetPathValue("id", test.URL[1:])
 			w := httptest.NewRecorder()
-			ReturnFullURL(w, request)
+			repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
+			service := shorten.NewShortenService(repo)
+			customHandler := NewHandler(service)
+			customHandler.ManagerReturnFullURL(w, request)
 			result := w.Result()
 			defer result.Body.Close()
 			assert.Equal(t, test.expect.status, result.StatusCode)
@@ -211,8 +221,12 @@ func TestCreateShortURLByJSON(t *testing.T) {
 			request := httptest.NewRequest(
 				http.MethodPost, "/api/shorten", bytes.NewReader(jsonBody),
 			)
+			ctx := context.WithValue(request.Context(), middleware.UserIDKey, 1)
 			w := httptest.NewRecorder()
-			CreateShortURLByJSON(w, request)
+			repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
+			service := shorten.NewShortenService(repo)
+			customHandler := NewHandler(service)
+			customHandler.ManagerCreateShortURLByJSON(w, request.WithContext(ctx))
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")
 			defer result.Body.Close()

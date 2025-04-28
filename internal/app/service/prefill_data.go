@@ -2,10 +2,15 @@ package service
 
 import (
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
-	"github.com/VladimirSh98/urlShortener/internal/app/repository"
+	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
+	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	fileRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/file"
+	memoryRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 )
 
-func prefill() error {
+func Prefill() error {
 	var err error
 	if config.DatabaseDSN != "" {
 		err = prefillFromDB()
@@ -22,32 +27,36 @@ func prefill() error {
 }
 
 func prefillFromFile() error {
-	err := repository.DBHandler.OpenReadOnly()
-	defer repository.DBHandler.Close()
+	err := fileRepo.DBHandler.OpenReadOnly()
+	defer fileRepo.DBHandler.Close()
 	if err != nil {
 		return err
 	}
-	var record *repository.URLStorageFileData
+	var record *fileRepo.URLStorageFileData
 	for {
-		record, err = repository.DBHandler.ReadLine()
+		record, err = fileRepo.DBHandler.ReadLine()
 		if err != nil {
 			return err
 		}
 		if record == nil {
 			return nil
 		}
-		repository.DBHandler.Count++
-		repository.CreateInMemory(record.ShortURL, record.OriginalURL)
+		fileRepo.DBHandler.Count++
+		memoryRepo.CreateInMemory(record.ShortURL, record.OriginalURL)
 	}
 }
 
 func prefillFromDB() error {
-	results, err := repository.GetAllRecordsFromDB()
+	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
+	results, err := getService.GetAllRecords()
 	if err != nil {
 		return err
 	}
 	for _, result := range results {
-		repository.CreateInMemory(result.ID, result.OriginalURL)
+		memoryRepo.CreateInMemory(result.ID, result.OriginalURL)
+		if int(middleware.UserCount) < result.UserID {
+			middleware.UserCount = int64(result.UserID)
+		}
 	}
 	return nil
 }

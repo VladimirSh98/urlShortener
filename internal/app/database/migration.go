@@ -6,7 +6,7 @@ import (
 )
 
 func (db *DBConnectionStruct) UpgradeMigrations() error {
-	err := goose.Up(db.conn, config.DefaultConfigValues.MigrationsDir)
+	err := goose.Up(db.Conn, config.DefaultConfigValues.MigrationsDir)
 	if err != nil {
 		return err
 	}
