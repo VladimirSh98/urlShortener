@@ -3,10 +3,11 @@ package middleware
 import (
 	"compress/gzip"
 	"context"
-	"go.uber.org/zap"
 	"net/http"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 func createCustomResponseWriter(w http.ResponseWriter) *CustomResponseWriter {

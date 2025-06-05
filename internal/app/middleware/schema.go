@@ -1,11 +1,12 @@
 package middleware
 
 import (
-	"github.com/golang-jwt/jwt/v4"
 	"io"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 var UserCount int64

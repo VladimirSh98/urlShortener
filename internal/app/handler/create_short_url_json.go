@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"io"
-	"net/http"
 )
 
 func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {

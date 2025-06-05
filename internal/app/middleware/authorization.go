@@ -1,12 +1,13 @@
 package middleware
 
 import (
-	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/pkg/errors"
 	"net/http"
 	"sync/atomic"
 	"time"
+
+	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/pkg/errors"
 )
 
 func BuildJWTString() (string, int, error) {

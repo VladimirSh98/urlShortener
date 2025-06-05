@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/logger"
 	"github.com/VladimirSh98/urlShortener/internal/app/service"
-	"log"
-	"net/http"
-	_ "net/http/pprof"
 )
 
 func main() {

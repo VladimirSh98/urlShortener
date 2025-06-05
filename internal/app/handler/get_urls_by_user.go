@@ -3,10 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 func (h *Handler) ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {

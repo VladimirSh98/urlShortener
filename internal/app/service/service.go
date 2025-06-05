@@ -1,6 +1,9 @@
 package service
 
 import (
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/handler"
@@ -10,8 +13,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
-	"net/http"
-	_ "net/http/pprof"
 )
 
 func Run() error {

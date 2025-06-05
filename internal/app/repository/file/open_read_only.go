@@ -2,8 +2,9 @@ package file
 
 import (
 	"bufio"
-	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"os"
+
+	"github.com/VladimirSh98/urlShortener/internal/app/config"
 )
 
 func (handler *Handler) OpenReadOnly() error {

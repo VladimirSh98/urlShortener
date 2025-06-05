@@ -2,14 +2,15 @@ package handler
 
 import (
 	"context"
-	"github.com/VladimirSh98/urlShortener/internal/app/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
-	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
+	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 )
 
 func BenchmarkManagerCreateShortURL(b *testing.B) {

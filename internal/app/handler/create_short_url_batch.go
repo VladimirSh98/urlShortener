@@ -3,14 +3,15 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"io"
-	"net/http"
 )
 
 func (h *Handler) ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.Request) {

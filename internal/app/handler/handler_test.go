@@ -4,17 +4,18 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/stretchr/testify/assert"
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
 )
 
 func TestCreateShortURL(t *testing.T) {

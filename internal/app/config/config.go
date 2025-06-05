@@ -2,9 +2,10 @@ package config
 
 import (
 	"flag"
+	"os"
+
 	"github.com/caarlos0/env/v6"
 	"gopkg.in/yaml.v3"
-	"os"
 )
 
 const ShortURLLength = 8

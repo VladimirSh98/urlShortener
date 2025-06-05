@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"math/rand"
+
+	"github.com/VladimirSh98/urlShortener/internal/app/config"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

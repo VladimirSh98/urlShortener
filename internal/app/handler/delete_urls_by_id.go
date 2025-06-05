@@ -2,10 +2,11 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
+
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
+	"go.uber.org/zap"
 )
 
 func (h *Handler) ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
