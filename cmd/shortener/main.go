@@ -6,9 +6,14 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/logger"
 	"github.com/VladimirSh98/urlShortener/internal/app/service"
 	"log"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 func main() {
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 	initLogger, err := logger.Initialize()
 	defer initLogger.Sync()
 	if err != nil {

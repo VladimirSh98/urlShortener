@@ -13,11 +13,13 @@ func (s ShortenService) BatchCreate(data []dbrepo.ShortenBatchRequest) {
 	if err != nil {
 		sugar.Warnln("Failed write to database %v", err)
 	}
-	for _, record := range data {
-		memory.CreateInMemory(record.Mask, record.URL)
-		err = file.CreateInFile(record.Mask, record.URL)
-		if err != nil {
-			sugar.Warnln("Failed write to file %v", err)
+	go func() {
+		for _, record := range data {
+			memory.CreateInMemory(record.Mask, record.URL)
+			err = file.CreateInFile(record.Mask, record.URL)
+			if err != nil {
+				sugar.Warnln("Failed write to file %v", err)
+			}
 		}
-	}
+	}()
 }

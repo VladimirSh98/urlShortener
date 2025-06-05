@@ -8,8 +8,10 @@ import (
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/go-chi/chi/v5"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 	"net/http"
+	_ "net/http/pprof"
 )
 
 func Run() error {
@@ -24,6 +26,7 @@ func Run() error {
 	customHandler := handler.NewHandler(service)
 	router := chi.NewMux()
 	router.Use(middleware.Config)
+	router.Mount("/debug", chiMiddleware.Profiler())
 	router.Get("/ping", customHandler.Ping)
 	router.Post("/", customHandler.ManagerCreateShortURL)
 	router.Post("/api/shorten", customHandler.ManagerCreateShortURLByJSON)
@@ -31,6 +34,5 @@ func Run() error {
 	router.Get("/{id}", customHandler.ManagerReturnFullURL)
 	router.Get("/api/user/urls", customHandler.ManagerGetURLsByUser)
 	router.Delete("/api/user/urls", customHandler.ManagerDeleteURLsByID)
-
 	return http.ListenAndServe(config.FlagRunAddr, router)
 }
