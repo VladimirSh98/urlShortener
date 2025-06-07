@@ -1,22 +1,18 @@
 package middleware
 
 import (
-	"net/http"
-	"sync/atomic"
-	"time"
-
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
+	"net/http"
+	"sync/atomic"
 )
 
 func BuildJWTString() (string, int, error) {
 	atomic.AddInt64(&UserCount, 1)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(TokenExp)),
-		},
-		UserID: UserCount,
+		RegisteredClaims: jwt.RegisteredClaims{},
+		UserID:           UserCount,
 	})
 	tokenString, err := token.SignedString([]byte(SecretKey))
 	if err != nil {
