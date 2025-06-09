@@ -16,15 +16,15 @@ import (
 )
 
 func Run() error {
-	err := Prefill()
 	sugar := zap.S()
-	if err != nil {
-		sugar.Warnln("Prefill data error %v", err)
-	}
 	sugar.Infoln("Prefill data success")
 	repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
 	service := shorten.NewShortenService(repo)
 	customHandler := handler.NewHandler(service)
+	err := Prefill(service)
+	if err != nil {
+		sugar.Warnln("Prefill data error %v", err)
+	}
 	router := chi.NewMux()
 	router.Use(middleware.Config)
 	router.Mount("/debug", chiMiddleware.Profiler())

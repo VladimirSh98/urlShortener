@@ -11,8 +11,6 @@ import (
 )
 
 func (h *Handler) ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
-	var err error
-
 	sugar := zap.S()
 	UserID := req.Context().Value(middleware.UserIDKey).(int)
 	results, err := h.service.GetByUserID(UserID)
