@@ -1,13 +1,13 @@
 package config
 
-type Config struct {
+type config struct {
 	ServerAddress string `env:"SERVER_ADDRESS"`
 	BaseURL       string `env:"BASE_URL"`
 	DBFilePath    string `env:"FILE_STORAGE_PATH"`
 	DatabaseDSN   string `env:"DATABASE_DSN"`
 }
 
-type DefaultConfig struct {
+type defaultConfig struct {
 	ServerAddress string `yaml:"server_address"`
 	BaseURL       string `yaml:"base_url"`
 	DBFilePath    string `yaml:"db_file_path"`

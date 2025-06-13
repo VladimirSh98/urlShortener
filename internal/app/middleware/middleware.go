@@ -10,11 +10,13 @@ import (
 	"go.uber.org/zap"
 )
 
-func createCustomResponseWriter(w http.ResponseWriter) *CustomResponseWriter {
+func createCustomResponseWriter(w http.ResponseWriter) *customResponseWriter {
 
-	return &CustomResponseWriter{ResponseWriter: w, Size: 0, Status: 200}
+	return &customResponseWriter{ResponseWriter: w, Size: 0, Status: 200}
 }
 
+// Config updates response, check authorization, performs compression
+// and add custom logs with response status, size, duration
 func Config(h http.Handler) http.Handler {
 	logFn := func(writer http.ResponseWriter, request *http.Request) {
 		var err error
@@ -27,7 +29,7 @@ func Config(h http.Handler) http.Handler {
 
 		var token string
 		var userID int
-		token, userID, err = Authorize(request)
+		token, userID, err = authorize(request)
 		if err != nil {
 			customWriter.WriteHeader(http.StatusUnauthorized)
 			return
@@ -51,7 +53,7 @@ func Config(h http.Handler) http.Handler {
 		if strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
 			gzipWriter := gzip.NewWriter(customWriter)
 			defer gzipWriter.Close()
-			customCompressWriter := CompressWriter{
+			customCompressWriter := compressWriter{
 				ResponseWriter: customWriter.ResponseWriter,
 				Size:           customWriter.Size,
 				Status:         customWriter.Status,

@@ -1,31 +1,31 @@
 package middleware
 
 import (
+	"github.com/golang-jwt/jwt/v4"
 	"io"
 	"net/http"
 	"sync"
-	"time"
-
-	"github.com/golang-jwt/jwt/v4"
 )
 
+// UserCount count user with shorten urls
 var UserCount int64
 
 type contextKey string
 
+// UserIDKey contains contextKey for userID
 const UserIDKey contextKey = "userID"
 
-const TokenExp = time.Hour * 3
+// SecretKey contains secret key for tokens
 const SecretKey = "supersecretkey"
 
-type CustomResponseWriter struct {
+type customResponseWriter struct {
 	http.ResponseWriter
 	Size   int
 	Status int
 	once   sync.Once
 }
 
-type CompressWriter struct {
+type compressWriter struct {
 	http.ResponseWriter
 	Size   int
 	Status int
@@ -33,28 +33,32 @@ type CompressWriter struct {
 	Writer io.Writer
 }
 
-type Claims struct {
+type claims struct {
 	jwt.RegisteredClaims
 	UserID int64
 }
 
-func (lrw *CustomResponseWriter) WriteHeader(code int) {
+// WriteHeader add status code to response
+func (lrw *customResponseWriter) WriteHeader(code int) {
 	lrw.Status = code
 	lrw.once.Do(func() { lrw.ResponseWriter.WriteHeader(code) })
 }
 
-func (lrw *CustomResponseWriter) Write(body []byte) (int, error) {
+// Write add size to response
+func (lrw *customResponseWriter) Write(body []byte) (int, error) {
 	n, err := lrw.ResponseWriter.Write(body)
 	lrw.Size += n
 	return n, err
 }
 
-func (lrw *CompressWriter) WriteHeader(code int) {
+// WriteHeader add status code to response
+func (lrw *compressWriter) WriteHeader(code int) {
 	lrw.Status = code
 	lrw.once.Do(func() { lrw.ResponseWriter.WriteHeader(code) })
 }
 
-func (lrw *CompressWriter) Write(body []byte) (int, error) {
+// Write add size to response
+func (lrw *compressWriter) Write(body []byte) (int, error) {
 	n, err := lrw.Writer.Write(body)
 	lrw.Size += n
 	return n, err

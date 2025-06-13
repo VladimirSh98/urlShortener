@@ -8,6 +8,7 @@ import (
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+// CreateRandomMask create mask with random char
 func CreateRandomMask() string {
 	result := make([]byte, config.ShortURLLength)
 	for i := range result {

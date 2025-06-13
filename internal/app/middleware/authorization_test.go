@@ -58,7 +58,7 @@ func TestAuthorization(t *testing.T) {
 					},
 				)
 			}
-			token, userID, err := Authorize(request)
+			token, userID, err := authorize(request)
 			assert.Equal(t, test.expect.err, err)
 			if test.testRequest.addAuth {
 				assert.Equal(t, test.expect.token, token)

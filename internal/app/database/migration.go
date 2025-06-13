@@ -5,7 +5,8 @@ import (
 	"github.com/pressly/goose/v3"
 )
 
-func (db *DBConnectionStruct) UpgradeMigrations() error {
+// UpgradeMigrations applies migrations to database
+func (db *dBConnectionStruct) UpgradeMigrations() error {
 	err := goose.Up(db.Conn, config.DefaultConfigValues.MigrationsDir)
 	if err != nil {
 		return err
