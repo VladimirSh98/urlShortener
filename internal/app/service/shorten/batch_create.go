@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// BatchCreate batch create urls
 func (s ShortenService) BatchCreate(data []dbrepo.ShortenBatchRequest) {
 	sugar := zap.S()
 	err := s.Repo.BatchCreate(data)

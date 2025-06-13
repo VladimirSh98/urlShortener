@@ -8,21 +8,23 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ShortURLLength contains short url length
+// ShortURLLength contains short URL length
 const ShortURLLength = 8
 
-var (
-	// FlagResultAddr contains result link url
-	FlagResultAddr string
-	// FlagRunAddr contains project url
-	FlagRunAddr string
-	// DBFilePath contains files path for data saving
-	DBFilePath string
-	// DatabaseDSN contains DB dsn
-	DatabaseDSN string
-	// DefaultConfigValues contains default credentials
-	DefaultConfigValues defaultConfig
-)
+// FlagResultAddr contains result link URL
+var FlagResultAddr string
+
+// FlagRunAddr contains project URL
+var FlagRunAddr string
+
+// DBFilePath contains files path for data saving
+var DBFilePath string
+
+// DatabaseDSN contains DB dsn
+var DatabaseDSN string
+
+// DefaultConfigValues contains default credentials
+var DefaultConfigValues defaultConfig
 
 // LoadConfig loads the project configuration
 func LoadConfig() error {

@@ -15,6 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Run service
 func Run() error {
 	sugar := zap.S()
 	sugar.Infoln("Prefill data success")

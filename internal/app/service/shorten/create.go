@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Create record in urls by mask, original URL and user ID
 func (s ShortenService) Create(mask string, originalURL string, userID int) (string, error) {
 	var err error
 	sugar := zap.S()
@@ -20,7 +21,7 @@ func (s ShortenService) Create(mask string, originalURL string, userID int) (str
 		if errors.As(err, &pgErr) && pgerrcode.IsIntegrityConstraintViolation(pgErr.Code) {
 			sugar.Infoln("URL already exists %s", originalURL)
 			var oldMask string
-			oldMask, err = GetByOriginalURL(s, originalURL)
+			oldMask, err = getByOriginalURL(s, originalURL)
 			if err != nil {
 				return "", err
 			}
@@ -35,7 +36,7 @@ func (s ShortenService) Create(mask string, originalURL string, userID int) (str
 	return mask, nil
 }
 
-func GetByOriginalURL(s ShortenService, originalURL string) (string, error) {
+func getByOriginalURL(s ShortenService, originalURL string) (string, error) {
 	result, err := s.Repo.GetByOriginalURL(originalURL)
 	if err != nil {
 		return "", err

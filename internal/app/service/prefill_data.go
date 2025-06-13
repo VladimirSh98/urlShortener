@@ -8,6 +8,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 )
 
+// Prefill records in memory by data from file or database
 func Prefill(s shorten.ShortenServiceInterface) error {
 	var err error
 	if config.DatabaseDSN != "" {
