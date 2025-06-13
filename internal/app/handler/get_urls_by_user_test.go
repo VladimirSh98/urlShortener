@@ -56,7 +56,7 @@ func TestGetURLsByUser(t *testing.T) {
 			description: "Test #3. Success",
 			expect: expect{
 				status: http.StatusOK,
-				response: []APIGetByUserIDResponse{
+				response: []getByUserIDResponseAPI{
 					{
 						ShortURL: "/ffsdafd",
 						URL:      "http://test.com",
@@ -96,7 +96,7 @@ func TestGetURLsByUser(t *testing.T) {
 			defer result.Body.Close()
 			if test.testRequest.checkResponse {
 				body, err := io.ReadAll(result.Body)
-				var realResponse []APIGetByUserIDResponse
+				var realResponse []getByUserIDResponseAPI
 				assert.NoError(t, err)
 				err = json.Unmarshal(body, &realResponse)
 				assert.NoError(t, err)

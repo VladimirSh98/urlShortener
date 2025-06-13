@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// ManagerReturnFullURL return URL by short URL
 func (h *Handler) ManagerReturnFullURL(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	urlID := req.PathValue("id")

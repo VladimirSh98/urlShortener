@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// ManagerGetURLsByUser get all URLs by user ID
 func (h *Handler) ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	UserID := req.Context().Value(middleware.UserIDKey).(int)
@@ -23,12 +24,12 @@ func (h *Handler) ManagerGetURLsByUser(res http.ResponseWriter, req *http.Reques
 		res.WriteHeader(http.StatusNoContent)
 		return
 	}
-	var response []APIGetByUserIDResponse
+	var response []getByUserIDResponseAPI
 	for _, result := range results {
 		ShortURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, result.ID)
 		response = append(
 			response,
-			APIGetByUserIDResponse{ShortURL: ShortURL, URL: result.OriginalURL},
+			getByUserIDResponseAPI{ShortURL: ShortURL, URL: result.OriginalURL},
 		)
 	}
 	jsonResponse, err := json.Marshal(response)

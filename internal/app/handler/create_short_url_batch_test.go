@@ -74,7 +74,7 @@ func TestCreateShortURLBatch(t *testing.T) {
 				checkBodyLength: true,
 			},
 			testRequest: testRequest{
-				body: []APIShortenBatchRequest{
+				body: []shortenBatchRequestAPI{
 					{URL: "http://example.com", CorrelationID: "123"},
 				},
 			},

@@ -64,7 +64,7 @@ func TestCreateShortURLByJSON(t *testing.T) {
 				checkBodyLength: true,
 			},
 			testRequest: testRequest{
-				body: APIShortenRequestData{URL: "http://example.com"},
+				body: shortenRequestDataAPI{URL: "http://example.com"},
 			},
 		},
 	}

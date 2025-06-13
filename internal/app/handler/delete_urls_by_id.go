@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// ManagerDeleteURLsByID delete URLs by IDs and user ID
 func (h *Handler) ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	body, err := io.ReadAll(req.Body)

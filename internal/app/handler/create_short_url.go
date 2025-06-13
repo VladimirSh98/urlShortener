@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// ManagerCreateShortURL create short URL by text request
 func (h *Handler) ManagerCreateShortURL(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	body, err := io.ReadAll(req.Body)
