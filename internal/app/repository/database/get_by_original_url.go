@@ -2,6 +2,7 @@ package database
 
 import "fmt"
 
+// GetByOriginalURL get short URL by original URL
 func (repo *ShortenRepository) GetByOriginalURL(originalURL string) (Shorter, error) {
 	var record Shorter
 	query := fmt.Sprintf("SELECT * FROM urls WHERE original_url = '%s' limit 1", originalURL)

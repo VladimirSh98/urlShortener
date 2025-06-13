@@ -5,7 +5,8 @@ import (
 	"fmt"
 )
 
-func (handler *Handler) Write(mask string, originalURL string) (string, error) {
+// Write data to file
+func (handler *handler) Write(mask string, originalURL string) (string, error) {
 	num := fmt.Sprintf("%d", handler.Count+1)
 	data := URLStorageFileData{num, mask, originalURL}
 	jsonData, err := json.Marshal(data)

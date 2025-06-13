@@ -5,7 +5,8 @@ import (
 	"io"
 )
 
-func (handler *Handler) ReadLine() (*URLStorageFileData, error) {
+// ReadLine read file by lines
+func (handler *handler) ReadLine() (*URLStorageFileData, error) {
 	data, err := handler.reader.ReadBytes('\n')
 	if err != nil {
 		if err == io.EOF {

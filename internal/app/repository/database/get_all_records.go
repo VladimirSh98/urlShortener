@@ -1,5 +1,6 @@
 package database
 
+// GetAllRecords get all records from urls
 func (repo *ShortenRepository) GetAllRecords() ([]Shorter, error) {
 	query := "SELECT * FROM urls"
 	rows, err := repo.Conn.Query(query)

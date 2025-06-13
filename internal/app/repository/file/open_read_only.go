@@ -7,7 +7,8 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 )
 
-func (handler *Handler) OpenReadOnly() error {
+// OpenReadOnly open file in readonly mode
+func (handler *handler) OpenReadOnly() error {
 	var err error
 	handler.file, err = os.OpenFile(config.DBFilePath, os.O_CREATE|os.O_RDONLY, 0666)
 	if err != nil {

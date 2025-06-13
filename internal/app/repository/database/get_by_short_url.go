@@ -2,6 +2,7 @@ package database
 
 import "fmt"
 
+// GetByShortURL get original URL by short URL
 func (repo *ShortenRepository) GetByShortURL(shortURL string) (Shorter, error) {
 	if repo.Conn == nil {
 		return Shorter{}, fmt.Errorf("DB connection is not open")

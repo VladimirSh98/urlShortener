@@ -5,21 +5,24 @@ import (
 	"os"
 )
 
+// URLStorageFileData contains uuid, short URL and original URL
 type URLStorageFileData struct {
 	UUID        string `json:"uuid"`
 	ShortURL    string `json:"short_url"`
 	OriginalURL string `json:"original_url"`
 }
 
-type Handler struct {
+type handler struct {
 	file   *os.File
 	writer *bufio.Writer
 	reader *bufio.Reader
 	Count  int
 }
 
-var DBHandler = Handler{}
+// DBHandler contains info for write and read file
+var DBHandler = handler{}
 
+// CreateInFile create record in file
 func CreateInFile(mask string, originalURL string) error {
 	err := DBHandler.Open()
 	defer DBHandler.Close()
