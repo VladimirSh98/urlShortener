@@ -6,7 +6,7 @@ import (
 )
 
 // UpgradeMigrations applies migrations to database
-func (db *dBConnectionStruct) UpgradeMigrations() error {
+func (db *DBConnectionStruct) UpgradeMigrations() error {
 	err := goose.Up(db.Conn, config.DefaultConfigValues.MigrationsDir)
 	if err != nil {
 		return err

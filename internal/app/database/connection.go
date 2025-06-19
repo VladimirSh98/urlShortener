@@ -7,15 +7,15 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-type dBConnectionStruct struct {
+type DBConnectionStruct struct {
 	Conn *sql.DB
 }
 
 // DBConnection contains connection to database
-var DBConnection = dBConnectionStruct{}
+var DBConnection = DBConnectionStruct{}
 
 // OpenConnection open database connection
-func (db *dBConnectionStruct) OpenConnection() error {
+func (db *DBConnectionStruct) OpenConnection() error {
 	var err error
 	db.Conn, err = sql.Open("pgx", config.DatabaseDSN)
 	if err != nil {
@@ -25,6 +25,6 @@ func (db *dBConnectionStruct) OpenConnection() error {
 }
 
 // CloseConnection close database connection
-func (db *dBConnectionStruct) CloseConnection() {
+func (db *DBConnectionStruct) CloseConnection() {
 	db.Conn.Close()
 }
