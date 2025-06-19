@@ -7,6 +7,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
+// DBConnectionStruct contains conn to DB
 type DBConnectionStruct struct {
 	Conn *sql.DB
 }
