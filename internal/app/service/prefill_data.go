@@ -2,18 +2,17 @@ package service
 
 import (
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
-	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
-	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	fileRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/file"
 	memoryRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 )
 
-func Prefill() error {
+// Prefill records in memory by data from file or database
+func Prefill(s shorten.ShortenServiceInterface) error {
 	var err error
 	if config.DatabaseDSN != "" {
-		err = prefillFromDB()
+		err = prefillFromDB(s)
 		if err != nil {
 			return err
 		}
@@ -46,9 +45,8 @@ func prefillFromFile() error {
 	}
 }
 
-func prefillFromDB() error {
-	getService := shorten.NewShortenService(dbRepo.ShortenRepository{Conn: database.DBConnection.Conn})
-	results, err := getService.GetAllRecords()
+func prefillFromDB(s shorten.ShortenServiceInterface) error {
+	results, err := s.GetAllRecords()
 	if err != nil {
 		return err
 	}

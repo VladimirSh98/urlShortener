@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
-	"go.uber.org/zap"
 	"io"
 	"net/http"
+
+	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
+	"go.uber.org/zap"
 )
 
+// ManagerDeleteURLsByID delete URLs by IDs and user ID
 func (h *Handler) ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	body, err := io.ReadAll(req.Body)

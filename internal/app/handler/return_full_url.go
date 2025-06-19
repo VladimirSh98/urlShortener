@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
 	"go.uber.org/zap"
-	"net/http"
 )
 
+// ManagerReturnFullURL return URL by short URL
 func (h *Handler) ManagerReturnFullURL(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	urlID := req.PathValue("id")

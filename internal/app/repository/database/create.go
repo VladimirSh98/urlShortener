@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// Create record in urls by mask, original URL and user ID
 func (repo *ShortenRepository) Create(mask string, originalURL string, userID int) (sql.Result, error) {
 	if repo.Conn == nil {
 		return nil, fmt.Errorf("DB connection is not open")

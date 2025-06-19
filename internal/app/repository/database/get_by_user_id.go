@@ -2,6 +2,7 @@ package database
 
 import "fmt"
 
+// GetByUserID get user URL by user ID from database
 func (repo *ShortenRepository) GetByUserID(userID int) ([]Shorter, error) {
 	query := fmt.Sprintf("SELECT * FROM urls WHERE user_id = '%d'", userID)
 	rows, err := repo.Conn.Query(query)

@@ -2,23 +2,33 @@ package config
 
 import (
 	"flag"
+	"os"
+
 	"github.com/caarlos0/env/v6"
 	"gopkg.in/yaml.v3"
-	"os"
 )
 
+// ShortURLLength contains short URL length
 const ShortURLLength = 8
 
-var (
-	FlagResultAddr      string
-	FlagRunAddr         string
-	DBFilePath          string
-	DatabaseDSN         string
-	DefaultConfigValues DefaultConfig
-)
+// FlagResultAddr contains result link URL
+var FlagResultAddr string
 
+// FlagRunAddr contains project URL
+var FlagRunAddr string
+
+// DBFilePath contains files path for data saving
+var DBFilePath string
+
+// DatabaseDSN contains DB dsn
+var DatabaseDSN string
+
+// DefaultConfigValues contains default credentials
+var DefaultConfigValues defaultConfig
+
+// LoadConfig loads the project configuration
 func LoadConfig() error {
-	var cfg Config
+	var cfg config
 	var err error
 
 	err = env.Parse(&cfg)
@@ -56,16 +66,16 @@ func parseFlag() {
 	flag.Parse()
 }
 
-func parseDefaultConfigValues() (DefaultConfig, error) {
+func parseDefaultConfigValues() (defaultConfig, error) {
 	defaultData, err := os.ReadFile("default_config.yaml")
 	if err != nil {
-		return DefaultConfig{}, err
+		return defaultConfig{}, err
 	}
 
-	var defaultConfigValues DefaultConfig
+	var defaultConfigValues defaultConfig
 	err = yaml.Unmarshal(defaultData, &defaultConfigValues)
 	if err != nil {
-		return DefaultConfig{}, err
+		return defaultConfig{}, err
 	}
 	return defaultConfigValues, nil
 }

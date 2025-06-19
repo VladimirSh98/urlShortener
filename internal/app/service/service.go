@@ -1,6 +1,9 @@
 package service
 
 import (
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/handler"
@@ -8,22 +11,24 @@ import (
 	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/go-chi/chi/v5"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
-	"net/http"
 )
 
+// Run service
 func Run() error {
-	err := Prefill()
 	sugar := zap.S()
-	if err != nil {
-		sugar.Warnln("Prefill data error %v", err)
-	}
 	sugar.Infoln("Prefill data success")
 	repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
 	service := shorten.NewShortenService(repo)
 	customHandler := handler.NewHandler(service)
+	err := Prefill(service)
+	if err != nil {
+		sugar.Warnln("Prefill data error %v", err)
+	}
 	router := chi.NewMux()
 	router.Use(middleware.Config)
+	router.Mount("/debug", chiMiddleware.Profiler())
 	router.Get("/ping", customHandler.Ping)
 	router.Post("/", customHandler.ManagerCreateShortURL)
 	router.Post("/api/shorten", customHandler.ManagerCreateShortURLByJSON)
@@ -31,6 +36,5 @@ func Run() error {
 	router.Get("/{id}", customHandler.ManagerReturnFullURL)
 	router.Get("/api/user/urls", customHandler.ManagerGetURLsByUser)
 	router.Delete("/api/user/urls", customHandler.ManagerDeleteURLsByID)
-
 	return http.ListenAndServe(config.FlagRunAddr, router)
 }

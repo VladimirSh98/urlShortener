@@ -1,14 +1,24 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	_ "net/http/pprof"
+	"os"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
 	"github.com/VladimirSh98/urlShortener/internal/app/logger"
 	"github.com/VladimirSh98/urlShortener/internal/app/service"
-	"log"
 )
 
 func main() {
+	if os.Getenv("ENABLE_PPROF") == "true" {
+		go func() {
+			log.Println("Starting pprof server on :6060")
+			log.Println(http.ListenAndServe("localhost:6060", nil))
+		}()
+	}
 	initLogger, err := logger.Initialize()
 	defer initLogger.Sync()
 	if err != nil {

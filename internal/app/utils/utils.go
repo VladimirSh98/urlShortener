@@ -1,12 +1,14 @@
 package utils
 
 import (
-	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"math/rand"
+
+	"github.com/VladimirSh98/urlShortener/internal/app/config"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+// CreateRandomMask create mask with random char
 func CreateRandomMask() string {
 	result := make([]byte, config.ShortURLLength)
 	for i := range result {

@@ -4,16 +4,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
-	"io"
-	"net/http"
 )
 
+// ManagerCreateShortURLByJSON create short URL by JSON request
 func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	body, err := io.ReadAll(req.Body)
@@ -23,7 +25,7 @@ func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http
 		return
 	}
 	UserID := req.Context().Value(middleware.UserIDKey).(int)
-	var data APIShortenRequestData
+	var data shortenRequestDataAPI
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		sugar.Errorln("ManagerCreateShortURLByJSON json unmarshall error", err)
@@ -46,7 +48,7 @@ func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http
 		res.WriteHeader(http.StatusCreated)
 	}
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
-	response, err := json.Marshal(APIShortenResponseData{Result: responseURL})
+	response, err := json.Marshal(shortenResponseDataAPI{Result: responseURL})
 	if err != nil {
 		sugar.Warnln("ManagerCreateShortURLByJSON json marshall error", err)
 		res.WriteHeader(http.StatusBadRequest)

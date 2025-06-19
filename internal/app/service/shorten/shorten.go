@@ -4,6 +4,7 @@ import (
 	dbrepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
 )
 
+// ShortenServiceInterface interface for service
 type ShortenServiceInterface interface {
 	Create(mask string, originalURL string, userID int) (string, error)
 	GetAllRecords() ([]dbrepo.Shorter, error)
@@ -15,10 +16,12 @@ type ShortenServiceInterface interface {
 	Ping() error
 }
 
+// ShortenService service with ShortenRepository
 type ShortenService struct {
 	Repo dbrepo.ShortenRepository
 }
 
+// NewShortenService create new service with ShortenRepository
 func NewShortenService(repo dbrepo.ShortenRepository) ShortenServiceInterface {
 	return &ShortenService{Repo: repo}
 }
