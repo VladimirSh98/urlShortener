@@ -2,15 +2,14 @@ package handler
 
 import (
 	"fmt"
-	"io"
-	"net/http"
-
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"io"
+	"net/http"
 )
 
 // ManagerCreateShortURL create short URL by text request
