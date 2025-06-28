@@ -1,8 +1,10 @@
 package service
 
 import (
+	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	dbrepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
 	"github.com/golang/mock/gomock"
 	"testing"
 
@@ -61,4 +63,15 @@ func TestPrefillDataFromDB(t *testing.T) {
 			assert.Equal(t, err, test.expect.err)
 		})
 	}
+}
+
+func TestPrefillDataFromFile(t *testing.T) {
+	t.Run("upload data", func(t *testing.T) {
+		config.DBFilePath = "test_data/test.json"
+		err := prefillFromFile()
+		assert.NoError(t, err)
+		result, ok := memory.Get("ETe5ORyc")
+		assert.True(t, ok)
+		assert.Equal(t, result, "http://test.com")
+	})
 }
