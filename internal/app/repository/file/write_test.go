@@ -27,19 +27,5 @@ func TestWrite(t *testing.T) {
 
 		assert.Equal(t, mask, resultMask)
 		assert.Equal(t, 1, handlerTest.Count)
-
-		//// Читаем записанные данные из файла
-		//_, err = tmpFile.Seek(0, 0)
-		//require.NoError(t, err)
-		//
-		//var data URLStorageFileData
-		//decoder := json.NewDecoder(tmpFile)
-		//err = decoder.Decode(&data)
-		//require.NoError(t, err)
-		//
-		//// Проверяем записанные данные
-		//assert.Equal(t, "1", data.Num) // handler.Count+1
-		//assert.Equal(t, mask, data.Mask)
-		//assert.Equal(t, originalURL, data.OriginalURL)
 	})
 }
