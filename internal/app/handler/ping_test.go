@@ -55,6 +55,7 @@ func TestPing(t *testing.T) {
 			mockHandler.Ping(w, request)
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")
+			result.Body.Close()
 		})
 	}
 }
