@@ -1,0 +1,6 @@
+# Тестовый yaml
+server_address: "localhost:8080"
+base_url: "http://localhost:8080"
+db_file_path: "./db.json"
+migrations_dir: "./migrations"
+database_dsn: "postgres://user:zhoskiy@localhost:5432/shortner?sslmode=disable"
