@@ -6,6 +6,9 @@ import (
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/multichecker"
 
+	"github.com/gostaticanalysis/forcetypeassert"
+	"github.com/orijtech/httperroryzer"
+
 	"golang.org/x/tools/go/analysis/passes/asmdecl"
 	"golang.org/x/tools/go/analysis/passes/assign"
 	"golang.org/x/tools/go/analysis/passes/atomic"
@@ -74,8 +77,8 @@ func main() {
 		}
 	}
 
-	//analyzers = append(analyzers, asciicheck.Analyzer)
-	//analyzers = append(analyzers, noerrorreturn.Analyzer)
+	analyzers = append(analyzers, forcetypeassert.Analyzer)
+	analyzers = append(analyzers, httperroryzer.Analyzer)
 
 	analyzers = append(analyzers, noExitInMainAnalyzer)
 

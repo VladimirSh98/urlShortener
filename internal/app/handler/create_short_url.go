@@ -21,7 +21,13 @@ func (h *Handler) ManagerCreateShortURL(res http.ResponseWriter, req *http.Reque
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	UserID := req.Context().Value(middleware.UserIDKey).(int)
+	userIDRaw := req.Context().Value(middleware.UserIDKey)
+	UserID, ok := userIDRaw.(int)
+	if !ok {
+		sugar.Errorln("invalid or missing user ID")
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	urlMask := utils.CreateRandomMask()
 	urlMask, err = h.service.Create(urlMask, string(body), UserID)
 	res.Header().Set("Content-Type", "text/plain")
