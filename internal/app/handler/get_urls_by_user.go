@@ -13,7 +13,13 @@ import (
 // ManagerGetURLsByUser get all URLs by user ID
 func (h *Handler) ManagerGetURLsByUser(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
-	UserID := req.Context().Value(middleware.UserIDKey).(int)
+	userIDRaw := req.Context().Value(middleware.UserIDKey)
+	UserID, ok := userIDRaw.(int)
+	if !ok {
+		sugar.Errorln("invalid or missing user ID")
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	results, err := h.service.GetByUserID(UserID)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
