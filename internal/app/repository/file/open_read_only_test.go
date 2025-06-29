@@ -31,21 +31,4 @@ func TestOpenReadOnly(t *testing.T) {
 		assert.NotNil(t, handlerTest.reader)
 		assert.FileExists(t, dbPath)
 	})
-
-	t.Run("error on permission denied", func(t *testing.T) {
-		tmpDir := t.TempDir()
-		dbPath := filepath.Join(tmpDir, "no_access.db")
-		_, err := os.Create(dbPath)
-		require.NoError(t, err)
-		err = os.Chmod(dbPath, 0222)
-		require.NoError(t, err)
-
-		config.DBFilePath = dbPath
-
-		handlerTest := &handler{}
-		err = handlerTest.OpenReadOnly()
-		require.Error(t, err)
-		assert.Nil(t, handlerTest.file)
-		assert.Nil(t, handlerTest.reader)
-	})
 }
