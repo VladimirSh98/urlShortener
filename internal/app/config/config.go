@@ -67,7 +67,7 @@ func parseFlag() {
 }
 
 func parseDefaultConfigValues() (defaultConfig, error) {
-	defaultData, err := os.ReadFile("default_config.yaml")
+	defaultData, err := os.ReadFile("./default_config.yaml")
 	if err != nil {
 		return defaultConfig{}, err
 	}

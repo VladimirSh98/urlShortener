@@ -18,7 +18,12 @@ func (h *Handler) ManagerDeleteURLsByID(res http.ResponseWriter, req *http.Reque
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	UserID := req.Context().Value(middleware.UserIDKey).(int)
+	userIDRaw := req.Context().Value(middleware.UserIDKey)
+	UserID, ok := userIDRaw.(int)
+	if !ok {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	var data []string
 	err = json.Unmarshal(body, &data)
 	if err != nil {

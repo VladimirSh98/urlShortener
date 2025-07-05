@@ -1,8 +1,10 @@
 package service
 
 import (
+	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	dbrepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	"github.com/VladimirSh98/urlShortener/internal/app/repository/memory"
 	"github.com/golang/mock/gomock"
 	"testing"
 
@@ -33,7 +35,7 @@ func TestPrefillDataFromDB(t *testing.T) {
 			},
 		},
 		{
-			description: "Test #1. Success",
+			description: "Test #2. Success",
 			expect: expect{
 				err: nil,
 			},
@@ -61,4 +63,52 @@ func TestPrefillDataFromDB(t *testing.T) {
 			assert.Equal(t, err, test.expect.err)
 		})
 	}
+}
+
+func TestPrefillDataFromFile(t *testing.T) {
+	t.Run("upload data", func(t *testing.T) {
+		config.DBFilePath = "test_data/test.json"
+		err := prefillFromFile()
+		assert.NoError(t, err)
+		result, ok := memory.Get("ETe5ORyc")
+		assert.True(t, ok)
+		assert.Equal(t, result, "http://test.com")
+	})
+}
+
+func TestPrefillData(t *testing.T) {
+	t.Run("upload data", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		mockService := shortenMock.NewMockShortenServiceInterface(ctrl)
+		config.DatabaseDSN = ""
+		config.DBFilePath = "test_data/test.json"
+		err := Prefill(mockService)
+		assert.NoError(t, err)
+		result, ok := memory.Get("ETe5ORyc")
+		assert.True(t, ok)
+		assert.Equal(t, result, "http://test.com")
+	})
+
+	t.Run("upload data", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		mockService := shortenMock.NewMockShortenServiceInterface(ctrl)
+		mockService.EXPECT().GetAllRecords().Return(
+			[]dbrepo.Shorter{
+				{
+					ID:          "ffsdafd",
+					OriginalURL: "http://test.com",
+					UserID:      1,
+					Archived:    false,
+				},
+			}, nil).AnyTimes()
+		config.DatabaseDSN = "databaseDSN"
+		config.DBFilePath = "test_data/test.json"
+		err := Prefill(mockService)
+		assert.NoError(t, err)
+		result, ok := memory.Get("ffsdafd")
+		assert.True(t, ok)
+		assert.Equal(t, result, "http://test.com")
+	})
 }
