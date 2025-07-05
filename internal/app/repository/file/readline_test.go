@@ -6,7 +6,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -43,16 +42,16 @@ func TestReadLine(t *testing.T) {
 		var record1 *URLStorageFileData
 		record1, err = handlerTest.ReadLine()
 		require.NoError(t, err)
-		assert.Equal(t, &testRecords[0], record1)
+		require.Equal(t, &testRecords[0], record1)
 
 		var record2 *URLStorageFileData
 		record2, err = handlerTest.ReadLine()
 		require.NoError(t, err)
-		assert.Equal(t, &testRecords[1], record2)
+		require.Equal(t, &testRecords[1], record2)
 
 		var record3 *URLStorageFileData
 		record3, err = handlerTest.ReadLine()
 		require.NoError(t, err)
-		assert.Nil(t, record3)
+		require.Nil(t, record3)
 	})
 }

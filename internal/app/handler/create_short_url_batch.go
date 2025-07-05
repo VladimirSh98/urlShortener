@@ -26,7 +26,6 @@ func (h *Handler) ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.
 	userIDRaw := req.Context().Value(middleware.UserIDKey)
 	UserID, ok := userIDRaw.(int)
 	if !ok {
-		sugar.Errorln("invalid or missing user ID")
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}

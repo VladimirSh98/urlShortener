@@ -1,6 +1,6 @@
 module github.com/VladimirSh98/urlShortener/cmd/staticlint
 
-go 1.23.4
+go 1.24
 
 require (
 	github.com/gostaticanalysis/forcetypeassert v0.2.0
@@ -10,7 +10,7 @@ require (
 )
 
 require (
-	golang.org/x/exp/typeparams v0.0.0-20231108232855-2478ac86f678 // indirect
+	golang.org/x/exp/typeparams v0.0.0-20250620022241-b7579e27df2b // indirect
 	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/sync v0.15.0 // indirect
 )

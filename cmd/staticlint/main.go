@@ -2,6 +2,7 @@ package main
 
 import (
 	"go/ast"
+	"go/types"
 
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/multichecker"
@@ -111,8 +112,16 @@ var noExitInMainAnalyzer = &analysis.Analyzer{
 					if !ok {
 						return true
 					}
-					if xIdent.Name == "os" && sel.Sel.Name == "Exit" {
-						pass.Reportf(call.Pos(), "direct call to os.Exit is forbidden in main")
+					if obj, ok := pass.TypesInfo.Uses[xIdent]; ok {
+						if pkgName, ok := obj.(*types.PkgName); ok {
+							if pkgName.Imported().Path() == "os" && sel.Sel.Name == "Exit" {
+								pass.Reportf(
+									call.Pos(),
+									"direct call to os.Exit is forbidden in main (package imported as %s)",
+									xIdent.Name,
+								)
+							}
+						}
 					}
 					return true
 				})
