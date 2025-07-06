@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"flag"
 	"os"
 
@@ -26,6 +27,18 @@ var DatabaseDSN string
 // DefaultConfigValues contains default credentials
 var DefaultConfigValues defaultConfig
 
+// EnableHTTPS is enabled https
+var EnableHTTPS bool
+
+// CertFile name
+var CertFile string
+
+// KeyFile name
+var KeyFile string
+
+// JSONConfigFile name
+var JSONConfigFile string
+
 // LoadConfig loads the project configuration
 func LoadConfig() error {
 	var cfg config
@@ -40,20 +53,41 @@ func LoadConfig() error {
 		return err
 	}
 	parseFlag()
+	var jsonConfig config
+	if JSONConfigFile != "" {
+		err = parseJSONConfig(&jsonConfig, JSONConfigFile)
+		if err != nil {
+			return err
+		}
+	}
 	if cfg.ServerAddress != "" {
 		FlagRunAddr = cfg.ServerAddress
+	} else if FlagRunAddr == "" {
+		FlagRunAddr = jsonConfig.ServerAddress
 	}
 	if cfg.BaseURL != "" {
 		FlagResultAddr = cfg.BaseURL
+	} else if FlagResultAddr == "" {
+		FlagResultAddr = jsonConfig.BaseURL
 	}
 	if cfg.DBFilePath != "" {
 		DBFilePath = cfg.DBFilePath
+	} else if DBFilePath == "" {
+		DBFilePath = jsonConfig.DBFilePath
 	}
 	if DBFilePath == "" {
 		DBFilePath = DefaultConfigValues.DBFilePath
 	}
 	if cfg.DatabaseDSN != "" {
 		DatabaseDSN = cfg.DatabaseDSN
+	} else if DatabaseDSN == "" {
+		DatabaseDSN = jsonConfig.DatabaseDSN
+	}
+	CertFile = DefaultConfigValues.CertFile
+	KeyFile = DefaultConfigValues.KeyFile
+	EnableHTTPS = cfg.EnableHTTPS
+	if !EnableHTTPS {
+		EnableHTTPS = jsonConfig.EnableHTTPS
 	}
 	return nil
 }
@@ -63,6 +97,7 @@ func parseFlag() {
 	flag.StringVar(&FlagResultAddr, "b", DefaultConfigValues.BaseURL, "Result address")
 	flag.StringVar(&DBFilePath, "f", DefaultConfigValues.DBFilePath, "DB file path")
 	flag.StringVar(&DatabaseDSN, "d", DefaultConfigValues.DatabaseDSN, "DB path")
+	flag.StringVar(&JSONConfigFile, "c", "", "Json config file path")
 	flag.Parse()
 }
 
@@ -78,4 +113,16 @@ func parseDefaultConfigValues() (defaultConfig, error) {
 		return defaultConfig{}, err
 	}
 	return defaultConfigValues, nil
+}
+
+func parseJSONConfig(jsonConfig *config, filename string) error {
+	file, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	if err = json.Unmarshal(file, &jsonConfig); err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
@@ -46,7 +49,9 @@ func main() {
 	if err != nil {
 		log.Printf("Database migrations failed: %v", err)
 	}
-	err = service.Run()
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	defer stop()
+	err = service.Run(ctx)
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
