@@ -1,11 +1,11 @@
 package config
 
 type config struct {
-	ServerAddress string `env:"SERVER_ADDRESS"`
-	BaseURL       string `env:"BASE_URL"`
-	DBFilePath    string `env:"FILE_STORAGE_PATH"`
-	DatabaseDSN   string `env:"DATABASE_DSN"`
-	EnableHTTPS   bool   `env:"ENABLE_HTTPS"`
+	ServerAddress string `env:"SERVER_ADDRESS" json:"server_address"`
+	BaseURL       string `env:"BASE_URL" json:"base_url"`
+	DBFilePath    string `env:"FILE_STORAGE_PATH" json:"file_storage_path"`
+	DatabaseDSN   string `env:"DATABASE_DSN" json:"database_dsn"`
+	EnableHTTPS   bool   `env:"ENABLE_HTTPS" json:"enable_https"`
 }
 
 type defaultConfig struct {
