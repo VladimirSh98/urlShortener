@@ -1,8 +1,11 @@
 package service
 
 import (
+	"context"
+	"github.com/pkg/errors"
 	"net/http"
 	_ "net/http/pprof"
+	"time"
 
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"github.com/VladimirSh98/urlShortener/internal/app/database"
@@ -16,7 +19,7 @@ import (
 )
 
 // Run service
-func Run() error {
+func Run(ctx context.Context) error {
 	sugar := zap.S()
 	sugar.Infoln("Prefill data success")
 	repo := dbRepo.NewShortenRepository(database.DBConnection.Conn)
@@ -36,9 +39,34 @@ func Run() error {
 	router.Get("/{id}", customHandler.ManagerReturnFullURL)
 	router.Get("/api/user/urls", customHandler.ManagerGetURLsByUser)
 	router.Delete("/api/user/urls", customHandler.ManagerDeleteURLsByID)
-	if config.EnableHTTPS {
-		return http.ListenAndServeTLS(config.FlagRunAddr, config.CertFile, config.KeyFile, router)
-	} else {
-		return http.ListenAndServe(config.FlagRunAddr, router)
+
+	server := &http.Server{
+		Addr:    config.FlagRunAddr,
+		Handler: router,
 	}
+
+	go func() {
+		if config.EnableHTTPS {
+			err = server.ListenAndServeTLS(config.CertFile, config.KeyFile)
+		} else {
+			err = server.ListenAndServe()
+		}
+		if err != nil && !errors.Is(http.ErrServerClosed, err) {
+			sugar.Errorf("Server error: %v", err)
+		}
+	}()
+
+	<-ctx.Done()
+	sugar.Info("Shutdown signal received")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err = server.Shutdown(shutdownCtx); err != nil {
+		sugar.Errorf("Shutdown failed: %v", err)
+		return err
+	}
+
+	sugar.Info("Server stopped gracefully")
+	return nil
 }
