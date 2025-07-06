@@ -52,7 +52,7 @@ func TestReturnFullURL(t *testing.T) {
 			request := httptest.NewRequest(http.MethodGet, test.URL, nil)
 			request.SetPathValue("id", test.URL[1:])
 			w := httptest.NewRecorder()
-			repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
+			repo := dbRepo.NewShortenRepository(database.DBConnection.Conn)
 			service := shorten.NewShortenService(repo)
 			customHandler := NewHandler(service)
 			customHandler.ManagerReturnFullURL(w, request)

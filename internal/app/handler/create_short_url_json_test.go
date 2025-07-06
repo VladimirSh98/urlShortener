@@ -76,7 +76,7 @@ func TestCreateShortURLByJSON(t *testing.T) {
 			)
 			ctx := context.WithValue(request.Context(), middleware.UserIDKey, 1)
 			w := httptest.NewRecorder()
-			repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
+			repo := dbRepo.NewShortenRepository(database.DBConnection.Conn)
 			service := shorten.NewShortenService(repo)
 			customHandler := NewHandler(service)
 			customHandler.ManagerCreateShortURLByJSON(w, request.WithContext(ctx))

@@ -18,10 +18,10 @@ type ShortenServiceInterface interface {
 
 // ShortenService service with ShortenRepository
 type ShortenService struct {
-	Repo dbrepo.ShortenRepository
+	Repo dbrepo.ShortenRepoInterface
 }
 
 // NewShortenService create new service with ShortenRepository
-func NewShortenService(repo dbrepo.ShortenRepository) ShortenServiceInterface {
+func NewShortenService(repo dbrepo.ShortenRepoInterface) ShortenServiceInterface {
 	return &ShortenService{Repo: repo}
 }

@@ -19,7 +19,7 @@ import (
 func Run() error {
 	sugar := zap.S()
 	sugar.Infoln("Prefill data success")
-	repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
+	repo := dbRepo.NewShortenRepository(database.DBConnection.Conn)
 	service := shorten.NewShortenService(repo)
 	customHandler := handler.NewHandler(service)
 	err := Prefill(service)

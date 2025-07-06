@@ -18,7 +18,7 @@ func BenchmarkManagerCreateShortURL(b *testing.B) {
 		request := httptest.NewRequest(http.MethodPost, "/", strings.NewReader("http://example.com"))
 		w := httptest.NewRecorder()
 		ctx := context.WithValue(request.Context(), middleware.UserIDKey, 1)
-		repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
+		repo := dbRepo.NewShortenRepository(database.DBConnection.Conn)
 		service := shorten.NewShortenService(repo)
 		customHandler := NewHandler(service)
 		customHandler.ManagerCreateShortURL(w, request.WithContext(ctx))

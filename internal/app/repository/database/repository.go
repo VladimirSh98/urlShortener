@@ -25,3 +25,20 @@ type ShortenBatchRequest struct {
 	Mask   string
 	UserID int
 }
+
+// ShortenRepoInterface interface for repository
+type ShortenRepoInterface interface {
+	BatchCreate(data []ShortenBatchRequest) error
+	BatchUpdate(data []string, userID int) error
+	Create(mask string, originalURL string, userID int) (sql.Result, error)
+	GetAllRecords() ([]Shorter, error)
+	GetByOriginalURL(originalURL string) (Shorter, error)
+	GetByShortURL(shortURL string) (Shorter, error)
+	GetByUserID(userID int) ([]Shorter, error)
+	Ping() error
+}
+
+// NewShortenRepository create new repository
+func NewShortenRepository(conn *sql.DB) ShortenRepoInterface {
+	return &ShortenRepository{Conn: conn}
+}
