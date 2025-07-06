@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,16 +11,18 @@ import (
 )
 
 func TestOpen(t *testing.T) {
-	origDBPath := config.DBFilePath
-	defer func() { config.DBFilePath = origDBPath }()
 
 	t.Run("successful open file", func(t *testing.T) {
-		tmpDir := t.TempDir()
-		dbPath := filepath.Join(tmpDir, "test.json")
-		_, err := os.Create(dbPath)
+		testData := `{"uuid":"1","short_url":"ETe5ORyc","original_url":"http://test.com"}` + "\n"
+
+		filePath := "test_data.json"
+
+		err := os.WriteFile(filePath, []byte(testData), 0644)
+		require.NoError(t, err)
+		defer os.Remove(filePath)
 		require.NoError(t, err)
 
-		config.DBFilePath = dbPath
+		config.DBFilePath = filePath
 
 		handlerTest := &handler{}
 		err = handlerTest.Open()
@@ -31,7 +32,7 @@ func TestOpen(t *testing.T) {
 		assert.NotNil(t, handlerTest.file)
 		assert.NotNil(t, handlerTest.writer)
 		assert.IsType(t, &bufio.Writer{}, handlerTest.writer)
-		assert.FileExists(t, dbPath)
+		assert.FileExists(t, filePath)
 	})
 
 	t.Run("error on invalid path", func(t *testing.T) {

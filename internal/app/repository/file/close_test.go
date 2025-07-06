@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestHandler_Close(t *testing.T) {
+func TestHandlerClose(t *testing.T) {
 	origDBPath := config.DBFilePath
 	defer func() { config.DBFilePath = origDBPath }()
 
