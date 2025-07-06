@@ -5,6 +5,7 @@ type config struct {
 	BaseURL       string `env:"BASE_URL"`
 	DBFilePath    string `env:"FILE_STORAGE_PATH"`
 	DatabaseDSN   string `env:"DATABASE_DSN"`
+	EnableHTTPS   bool   `env:"ENABLE_HTTPS"`
 }
 
 type defaultConfig struct {
@@ -14,4 +15,6 @@ type defaultConfig struct {
 	DBFileName    string `yaml:"db_file_name"`
 	DatabaseDSN   string `yaml:"database_dsn"`
 	MigrationsDir string `yaml:"migrations_dir"`
+	CertFile      string `yaml:"cert_file"`
+	KeyFile       string `yaml:"key_file"`
 }

@@ -26,6 +26,15 @@ var DatabaseDSN string
 // DefaultConfigValues contains default credentials
 var DefaultConfigValues defaultConfig
 
+// EnableHTTPS is enabled https
+var EnableHTTPS bool
+
+// CertFile name
+var CertFile string
+
+// KeyFile name
+var KeyFile string
+
 // LoadConfig loads the project configuration
 func LoadConfig() error {
 	var cfg config
@@ -55,6 +64,9 @@ func LoadConfig() error {
 	if cfg.DatabaseDSN != "" {
 		DatabaseDSN = cfg.DatabaseDSN
 	}
+	CertFile = DefaultConfigValues.CertFile
+	KeyFile = DefaultConfigValues.KeyFile
+	EnableHTTPS = cfg.EnableHTTPS
 	return nil
 }
 

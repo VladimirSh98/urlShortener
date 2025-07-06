@@ -36,5 +36,9 @@ func Run() error {
 	router.Get("/{id}", customHandler.ManagerReturnFullURL)
 	router.Get("/api/user/urls", customHandler.ManagerGetURLsByUser)
 	router.Delete("/api/user/urls", customHandler.ManagerDeleteURLsByID)
-	return http.ListenAndServe(config.FlagRunAddr, router)
+	if config.EnableHTTPS {
+		return http.ListenAndServeTLS(config.FlagRunAddr, config.CertFile, config.KeyFile, router)
+	} else {
+		return http.ListenAndServe(config.FlagRunAddr, router)
+	}
 }
