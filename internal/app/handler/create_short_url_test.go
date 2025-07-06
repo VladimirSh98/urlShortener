@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
-	"github.com/VladimirSh98/urlShortener/internal/app/database"
+	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
-	dbRepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
-	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
+	shortenMock "github.com/VladimirSh98/urlShortener/mocks/shorten"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -24,6 +24,7 @@ func TestCreateShortURL(t *testing.T) {
 		URL    string
 		method string
 		body   string
+		err    error
 	}
 	tests := []struct {
 		description string
@@ -82,15 +83,32 @@ func TestCreateShortURL(t *testing.T) {
 				body:   "http://example.com",
 			},
 		},
+		{
+			description: "Test #5. Error",
+			expect: expect{
+				status:          http.StatusConflict,
+				contentType:     "text/plain",
+				checkBodyLength: true,
+			},
+			testRequest: testRequest{
+				URL:    "/",
+				method: http.MethodPost,
+				body:   "http://example.com",
+				err:    customErr.ErrConstraintViolation,
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			request := httptest.NewRequest(test.testRequest.method, test.testRequest.URL, strings.NewReader(test.testRequest.body))
 			w := httptest.NewRecorder()
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			mockService := shortenMock.NewMockShortenServiceInterface(ctrl)
+			mockService.EXPECT().Create(gomock.Any(), gomock.Any(), gomock.Any()).Return(
+				"", test.testRequest.err).AnyTimes()
 			ctx := context.WithValue(request.Context(), middleware.UserIDKey, 1)
-			repo := dbRepo.ShortenRepository{Conn: database.DBConnection.Conn}
-			service := shorten.NewShortenService(repo)
-			customHandler := NewHandler(service)
+			customHandler := NewHandler(mockService)
 			customHandler.ManagerCreateShortURL(w, request.WithContext(ctx))
 			result := w.Result()
 			assert.Equal(t, test.expect.status, result.StatusCode, "Неверный код ответа")

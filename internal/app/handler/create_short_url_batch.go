@@ -23,7 +23,12 @@ func (h *Handler) ManagerCreateShortURLBatch(res http.ResponseWriter, req *http.
 		res.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	UserID := req.Context().Value(middleware.UserIDKey).(int)
+	userIDRaw := req.Context().Value(middleware.UserIDKey)
+	UserID, ok := userIDRaw.(int)
+	if !ok {
+		res.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	var data []shortenBatchRequestAPI
 	err = json.Unmarshal(body, &data)
 	if err != nil {

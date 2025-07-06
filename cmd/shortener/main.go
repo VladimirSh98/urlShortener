@@ -12,6 +12,12 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/service"
 )
 
+var (
+	buildVersion string = "N/A"
+	buildDate    string = "N/A"
+	buildCommit  string = "N/A"
+)
+
 func main() {
 	if os.Getenv("ENABLE_PPROF") == "true" {
 		go func() {
@@ -19,6 +25,9 @@ func main() {
 			log.Println(http.ListenAndServe("localhost:6060", nil))
 		}()
 	}
+	log.Printf("Build version: %s\n", buildVersion)
+	log.Printf("Build date: %s\n", buildDate)
+	log.Printf("Build commit: %s\n", buildCommit)
 	initLogger, err := logger.Initialize()
 	defer initLogger.Sync()
 	if err != nil {
