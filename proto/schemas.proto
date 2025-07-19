@@ -22,6 +22,10 @@ message BatchShortenResponse {
   string short_url = 2;
 }
 
+message BatchShortenResponseList {
+  repeated BatchShortenResponse urls = 1;
+}
+
 message BatchShortenRequestWithMask {
   BatchShortenRequest request = 1;
   string mask = 2;
