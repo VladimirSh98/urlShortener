@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package urlshortener;
+
+import "google/protobuf/empty.proto";
+
+option go_package = ".;proto";
+
+message ShortenRequest {
+  string url = 1;
+}
+
+message ShortenResponse {
+  string result = 1;
+}
+
+message BatchShortenRequest {
+  string correlation_id = 1;
+  string original_url = 2;
+}
+
+message BatchShortenResponse {
+  string correlation_id = 1;
+  string short_url = 2;
+}
+
+message BatchShortenRequestWithMask {
+  BatchShortenRequest request = 1;
+  string mask = 2;
+}
+
+message UserURLResponse {
+  string short_url = 1;
+  string original_url = 2;
+}
+
+message StatsResponse {
+  int32 urls = 1;
+  int32 users = 2;
+}
