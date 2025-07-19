@@ -1,10 +1,8 @@
 syntax = "proto3";
 
-package urlshortener;
+package schemas;
 
-import "google/protobuf/empty.proto";
-
-option go_package = ".;proto";
+option go_package = "schemas/proto";
 
 message ShortenRequest {
   string url = 1;
@@ -32,6 +30,10 @@ message BatchShortenRequestWithMask {
 message UserURLResponse {
   string short_url = 1;
   string original_url = 2;
+}
+
+message GetUserURLsResponse {
+  repeated UserURLResponse urls = 1;
 }
 
 message StatsResponse {

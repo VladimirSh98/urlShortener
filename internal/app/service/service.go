@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc"
+	"net"
 	"net/http"
 	_ "net/http/pprof"
 	"time"
@@ -15,6 +17,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/soheilhy/cmux"
 	"go.uber.org/zap"
 )
 
@@ -43,16 +46,29 @@ func Run(ctx context.Context) error {
 	subnetGroup.Use(middleware.CheckTrustedSubnet)
 	subnetGroup.Get("/api/internal/stats", customHandler.GetStats)
 
+	lis, err := net.Listen("tcp", config.FlagRunAddr)
+	if err != nil {
+		sugar.Fatalf("Failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	m := cmux.New(lis)
+
+	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
+	httpL := m.Match(cmux.Any())
 	server := &http.Server{
-		Addr:    config.FlagRunAddr,
 		Handler: router,
 	}
 
 	go func() {
+		sugar.Infof("Starting gRPC server on %s", config.FlagRunAddr)
+		grpcServer.Serve(grpcL)
+	}()
+
+	go func() {
 		if config.EnableHTTPS {
-			err = server.ListenAndServeTLS(config.CertFile, config.KeyFile)
+			err = server.ServeTLS(httpL, config.CertFile, config.KeyFile)
 		} else {
-			err = server.ListenAndServe()
+			err = server.Serve(httpL)
 		}
 		if err != nil && !errors.Is(http.ErrServerClosed, err) {
 			sugar.Errorf("Server error: %v", err)
