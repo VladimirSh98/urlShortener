@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// GetStats get stats for urls count and users count
 func (h *Handler) GetStats(res http.ResponseWriter, req *http.Request) {
 	sugar := zap.S()
 	result, err := h.service.GetAllRecords()
