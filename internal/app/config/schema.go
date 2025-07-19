@@ -18,4 +18,5 @@ type defaultConfig struct {
 	MigrationsDir string `yaml:"migrations_dir"`
 	CertFile      string `yaml:"cert_file"`
 	KeyFile       string `yaml:"key_file"`
+	GrpcAddress   string `yaml:"grpc_address"`
 }

@@ -44,8 +44,8 @@ func Run(ctx context.Context) error {
 	subnetGroup := router.Group(nil)
 	subnetGroup.Use(middleware.CheckTrustedSubnet)
 	subnetGroup.Get("/api/internal/stats", customHandler.GetStats)
-
-	lis, err := net.Listen("tcp", ":8000")
+	var lis net.Listener
+	lis, err = net.Listen("tcp", config.GrpcAddress)
 	if err != nil {
 		sugar.Fatalf("Failed to listen: %v", err)
 	}

@@ -42,6 +42,9 @@ var JSONConfigFile string
 // TrustedSubnet name
 var TrustedSubnet string
 
+// GrpcAddress name
+var GrpcAddress string
+
 // LoadConfig loads the project configuration
 func LoadConfig() error {
 	var cfg config
@@ -95,6 +98,7 @@ func LoadConfig() error {
 	if !EnableHTTPS {
 		EnableHTTPS = jsonConfig.EnableHTTPS
 	}
+	GrpcAddress = DefaultConfigValues.GrpcAddress
 	return nil
 }
 
