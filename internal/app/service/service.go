@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"net"
 	"net/http"
@@ -56,12 +55,8 @@ func Run(ctx context.Context) error {
 	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
 	server := &http.Server{
 		Handler: router,
+		Addr:    config.FlagRunAddr,
 	}
-
-	go func() {
-		sugar.Infof("Starting gRPC server on %s", config.FlagRunAddr)
-		grpcServer.Serve(grpcL)
-	}()
 
 	go func() {
 		if config.EnableHTTPS {
@@ -69,9 +64,11 @@ func Run(ctx context.Context) error {
 		} else {
 			err = server.ListenAndServe()
 		}
-		if err != nil && !errors.Is(http.ErrServerClosed, err) {
-			sugar.Errorf("Server error: %v", err)
-		}
+	}()
+
+	go func() {
+		sugar.Infof("Starting gRPC server on %s", config.FlagRunAddr)
+		grpcServer.Serve(grpcL)
 	}()
 
 	<-ctx.Done()
