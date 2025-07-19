@@ -49,11 +49,11 @@ func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http
 	}
 	urlMask := utils.CreateRandomMask()
 	urlMask, err = h.service.Create(urlMask, data.URL, UserID)
-	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
 	accept := req.Header.Get("Accept")
 
 	switch {
 	case strings.Contains(accept, "application/grpc"):
+		responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
 		grpcResponse := &myProto.ShortenResponse{
 			Result: responseURL,
 		}
@@ -73,6 +73,7 @@ func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http
 
 	default:
 		var response []byte
+		responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
 		response, err = json.Marshal(shortenResponseDataAPI{Result: responseURL})
 		if err != nil {
 			sugar.Errorln("JSON marshal error:", err)
