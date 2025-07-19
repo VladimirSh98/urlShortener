@@ -46,7 +46,7 @@ func Run(ctx context.Context) error {
 	subnetGroup.Use(middleware.CheckTrustedSubnet)
 	subnetGroup.Get("/api/internal/stats", customHandler.GetStats)
 
-	lis, err := net.Listen("tcp", config.FlagRunAddr)
+	lis, err := net.Listen("tcp", ":8000")
 	if err != nil {
 		sugar.Fatalf("Failed to listen: %v", err)
 	}
@@ -54,7 +54,6 @@ func Run(ctx context.Context) error {
 	m := cmux.New(lis)
 
 	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
-	httpL := m.Match(cmux.Any())
 	server := &http.Server{
 		Handler: router,
 	}
@@ -66,9 +65,9 @@ func Run(ctx context.Context) error {
 
 	go func() {
 		if config.EnableHTTPS {
-			err = server.ServeTLS(httpL, config.CertFile, config.KeyFile)
+			err = server.ListenAndServeTLS(config.CertFile, config.KeyFile)
 		} else {
-			err = server.Serve(httpL)
+			err = server.ListenAndServe()
 		}
 		if err != nil && !errors.Is(http.ErrServerClosed, err) {
 			sugar.Errorf("Server error: %v", err)
