@@ -4,13 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"google.golang.org/protobuf/proto"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/VladimirSh98/urlShortener/internal/app/config"
 	customErr "github.com/VladimirSh98/urlShortener/internal/app/errors"
 	"github.com/VladimirSh98/urlShortener/internal/app/middleware"
 	"github.com/VladimirSh98/urlShortener/internal/app/utils"
+	myProto "github.com/VladimirSh98/urlShortener/proto"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 )
@@ -46,23 +49,45 @@ func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http
 	}
 	urlMask := utils.CreateRandomMask()
 	urlMask, err = h.service.Create(urlMask, data.URL, UserID)
-	res.Header().Set("Content-Type", "application/json")
-	if errors.Is(err, customErr.ErrConstraintViolation) {
-		res.WriteHeader(http.StatusConflict)
-	} else {
-		res.WriteHeader(http.StatusCreated)
-	}
 	responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
-	response, err := json.Marshal(shortenResponseDataAPI{Result: responseURL})
-	if err != nil {
-		sugar.Warnln("ManagerCreateShortURLByJSON json marshall error", err)
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	_, err = res.Write(response)
-	if err != nil {
-		sugar.Errorln("ManagerCreateShortURLByJSON response error", err)
-		res.WriteHeader(http.StatusBadRequest)
-		return
+	accept := req.Header.Get("Accept")
+
+	switch {
+	case strings.Contains(accept, "application/grpc"):
+		grpcResponse := &myProto.ShortenResponse{
+			Result: responseURL,
+		}
+		var grpcData []byte
+		grpcData, err = proto.Marshal(grpcResponse)
+		if err != nil {
+			sugar.Errorln("Failed to marshal gRPC response:", err)
+			res.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		res.Header().Set("Content-Type", "application/grpc+proto")
+		res.WriteHeader(http.StatusOK)
+		if _, err = res.Write(grpcData); err != nil {
+			sugar.Errorln("Failed to write gRPC response:", err)
+		}
+
+	default:
+		var response []byte
+		response, err = json.Marshal(shortenResponseDataAPI{Result: responseURL})
+		if err != nil {
+			sugar.Errorln("JSON marshal error:", err)
+			res.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		res.Header().Set("Content-Type", "application/json")
+		if errors.Is(err, customErr.ErrConstraintViolation) {
+			res.WriteHeader(http.StatusConflict)
+		} else {
+			res.WriteHeader(http.StatusCreated)
+		}
+		if _, err = res.Write(response); err != nil {
+			sugar.Errorln("Failed to write JSON response:", err)
+		}
 	}
 }
