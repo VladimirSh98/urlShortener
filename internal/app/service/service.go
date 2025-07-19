@@ -39,6 +39,9 @@ func Run(ctx context.Context) error {
 	router.Get("/{id}", customHandler.ManagerReturnFullURL)
 	router.Get("/api/user/urls", customHandler.ManagerGetURLsByUser)
 	router.Delete("/api/user/urls", customHandler.ManagerDeleteURLsByID)
+	subnetGroup := router.Group(nil)
+	subnetGroup.Use(middleware.CheckTrustedSubnet)
+	subnetGroup.Get("/api/internal/stats", customHandler.GetStats)
 
 	server := &http.Server{
 		Addr:    config.FlagRunAddr,
