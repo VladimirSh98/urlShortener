@@ -49,8 +49,13 @@ func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http
 	}
 	urlMask := utils.CreateRandomMask()
 	urlMask, err = h.service.Create(urlMask, data.URL, UserID)
+	var resStatus int
+	if errors.Is(err, customErr.ErrConstraintViolation) {
+		resStatus = http.StatusConflict
+	} else {
+		resStatus = http.StatusCreated
+	}
 	accept := req.Header.Get("Accept")
-
 	switch {
 	case strings.Contains(accept, "application/grpc"):
 		responseURL := fmt.Sprintf("%s/%s", config.FlagResultAddr, urlMask)
@@ -80,13 +85,8 @@ func (h *Handler) ManagerCreateShortURLByJSON(res http.ResponseWriter, req *http
 			res.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-
 		res.Header().Set("Content-Type", "application/json")
-		if errors.Is(err, customErr.ErrConstraintViolation) {
-			res.WriteHeader(http.StatusConflict)
-		} else {
-			res.WriteHeader(http.StatusCreated)
-		}
+		res.WriteHeader(resStatus)
 		if _, err = res.Write(response); err != nil {
 			sugar.Errorln("Failed to write JSON response:", err)
 		}
