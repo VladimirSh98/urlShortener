@@ -6,6 +6,7 @@ type config struct {
 	DBFilePath    string `env:"FILE_STORAGE_PATH" json:"file_storage_path"`
 	DatabaseDSN   string `env:"DATABASE_DSN" json:"database_dsn"`
 	EnableHTTPS   bool   `env:"ENABLE_HTTPS" json:"enable_https"`
+	TrustedSubnet string `env:"TRUSTED_SUBNET" json:"trusted_subnet"`
 }
 
 type defaultConfig struct {
@@ -17,4 +18,5 @@ type defaultConfig struct {
 	MigrationsDir string `yaml:"migrations_dir"`
 	CertFile      string `yaml:"cert_file"`
 	KeyFile       string `yaml:"key_file"`
+	GrpcAddress   string `yaml:"grpc_address"`
 }

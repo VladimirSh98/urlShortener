@@ -39,6 +39,12 @@ var KeyFile string
 // JSONConfigFile name
 var JSONConfigFile string
 
+// TrustedSubnet name
+var TrustedSubnet string
+
+// GrpcAddress name
+var GrpcAddress string
+
 // LoadConfig loads the project configuration
 func LoadConfig() error {
 	var cfg config
@@ -83,12 +89,16 @@ func LoadConfig() error {
 	} else if DatabaseDSN == "" {
 		DatabaseDSN = jsonConfig.DatabaseDSN
 	}
+	if TrustedSubnet == "" {
+		TrustedSubnet = jsonConfig.TrustedSubnet
+	}
 	CertFile = DefaultConfigValues.CertFile
 	KeyFile = DefaultConfigValues.KeyFile
 	EnableHTTPS = cfg.EnableHTTPS
 	if !EnableHTTPS {
 		EnableHTTPS = jsonConfig.EnableHTTPS
 	}
+	GrpcAddress = DefaultConfigValues.GrpcAddress
 	return nil
 }
 
@@ -98,6 +108,7 @@ func parseFlag() {
 	flag.StringVar(&DBFilePath, "f", DefaultConfigValues.DBFilePath, "DB file path")
 	flag.StringVar(&DatabaseDSN, "d", DefaultConfigValues.DatabaseDSN, "DB path")
 	flag.StringVar(&JSONConfigFile, "c", "", "Json config file path")
+	flag.StringVar(&TrustedSubnet, "t", "", "Trusted subnet")
 	flag.Parse()
 }
 

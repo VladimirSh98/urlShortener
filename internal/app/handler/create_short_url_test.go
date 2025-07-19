@@ -21,10 +21,11 @@ func TestCreateShortURL(t *testing.T) {
 		checkBodyLength bool
 	}
 	type testRequest struct {
-		URL    string
-		method string
-		body   string
-		err    error
+		URL     string
+		method  string
+		body    string
+		err     error
+		headers map[string]string
 	}
 	tests := []struct {
 		description string
@@ -97,10 +98,48 @@ func TestCreateShortURL(t *testing.T) {
 				err:    customErr.ErrConstraintViolation,
 			},
 		},
+		{
+			description: "Test #6. GRPC Success",
+			expect: expect{
+				status:          http.StatusCreated,
+				contentType:     "application/grpc+proto",
+				checkBodyLength: true,
+			},
+			testRequest: testRequest{
+				URL:    "/",
+				method: http.MethodPost,
+				body:   "http://example.com",
+				headers: map[string]string{
+					"Accept": "application/grpc",
+				},
+			},
+		},
+		{
+			description: "Test #7. GRPC Error",
+			expect: expect{
+				status:          http.StatusConflict,
+				contentType:     "application/grpc+proto",
+				checkBodyLength: true,
+			},
+			testRequest: testRequest{
+				URL:    "/",
+				method: http.MethodPost,
+				body:   "http://example.com",
+				headers: map[string]string{
+					"Accept": "application/grpc",
+				},
+				err: customErr.ErrConstraintViolation,
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
 			request := httptest.NewRequest(test.testRequest.method, test.testRequest.URL, strings.NewReader(test.testRequest.body))
+			if test.testRequest.headers != nil {
+				for k, v := range test.testRequest.headers {
+					request.Header.Set(k, v)
+				}
+			}
 			w := httptest.NewRecorder()
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()

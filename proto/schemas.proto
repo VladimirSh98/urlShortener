@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package schemas;
+
+option go_package = "schemas/proto";
+
+message ShortenRequest {
+  string url = 1;
+}
+
+message ShortenResponse {
+  string result = 1;
+}
+
+message BatchShortenRequest {
+  string correlation_id = 1;
+  string original_url = 2;
+}
+
+message BatchShortenResponse {
+  string correlation_id = 1;
+  string short_url = 2;
+}
+
+message BatchShortenResponseList {
+  repeated BatchShortenResponse urls = 1;
+}
+
+message BatchShortenRequestWithMask {
+  BatchShortenRequest request = 1;
+  string mask = 2;
+}
+
+message UserURLResponse {
+  string short_url = 1;
+  string original_url = 2;
+}
+
+message GetUserURLsResponse {
+  repeated UserURLResponse urls = 1;
+}
+
+message StatsResponse {
+  int32 urls = 1;
+  int32 users = 2;
+}

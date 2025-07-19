@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/pkg/errors"
+	"google.golang.org/grpc"
+	"net"
 	"net/http"
 	_ "net/http/pprof"
 	"time"
@@ -15,6 +16,7 @@ import (
 	"github.com/VladimirSh98/urlShortener/internal/app/service/shorten"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/soheilhy/cmux"
 	"go.uber.org/zap"
 )
 
@@ -39,10 +41,21 @@ func Run(ctx context.Context) error {
 	router.Get("/{id}", customHandler.ManagerReturnFullURL)
 	router.Get("/api/user/urls", customHandler.ManagerGetURLsByUser)
 	router.Delete("/api/user/urls", customHandler.ManagerDeleteURLsByID)
+	subnetGroup := router.Group(nil)
+	subnetGroup.Use(middleware.CheckTrustedSubnet)
+	subnetGroup.Get("/api/internal/stats", customHandler.GetStats)
+	var lis net.Listener
+	lis, err = net.Listen("tcp", config.GrpcAddress)
+	if err != nil {
+		sugar.Fatalf("Failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	m := cmux.New(lis)
 
+	grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
 	server := &http.Server{
-		Addr:    config.FlagRunAddr,
 		Handler: router,
+		Addr:    config.FlagRunAddr,
 	}
 
 	go func() {
@@ -51,9 +64,11 @@ func Run(ctx context.Context) error {
 		} else {
 			err = server.ListenAndServe()
 		}
-		if err != nil && !errors.Is(http.ErrServerClosed, err) {
-			sugar.Errorf("Server error: %v", err)
-		}
+	}()
+
+	go func() {
+		sugar.Infof("Starting gRPC server on %s", config.FlagRunAddr)
+		grpcServer.Serve(grpcL)
 	}()
 
 	<-ctx.Done()

@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	dbrepo "github.com/VladimirSh98/urlShortener/internal/app/repository/database"
+	myProto "github.com/VladimirSh98/urlShortener/proto"
 	"github.com/golang/mock/gomock"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
+	"google.golang.org/protobuf/proto"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -101,6 +104,64 @@ func TestGetURLsByUser(t *testing.T) {
 				err = json.Unmarshal(body, &realResponse)
 				assert.NoError(t, err)
 				assert.Equal(t, realResponse, test.expect.response)
+			}
+		})
+	}
+}
+
+func TestHandleGRPCGetURLsByUser(t *testing.T) {
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+	sugar := logger.Sugar()
+
+	testCases := []struct {
+		name           string
+		input          []getByUserIDResponseAPI
+		expectedStatus int
+		expectError    bool
+	}{
+		{
+			name: "success case with multiple URLs",
+			input: []getByUserIDResponseAPI{
+				{ShortURL: "http://short/abc", URL: "http://original.com/long1"},
+				{ShortURL: "http://short/def", URL: "http://original.com/long2"},
+			},
+			expectedStatus: http.StatusOK,
+			expectError:    false,
+		},
+		{
+			name:           "empty response",
+			input:          []getByUserIDResponseAPI{},
+			expectedStatus: http.StatusOK,
+			expectError:    false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rr := httptest.NewRecorder()
+			h := &Handler{}
+			h.handleGRPCGetURLsByUser(rr, tc.input, sugar)
+
+			if rr.Code != tc.expectedStatus {
+				t.Errorf("expected status %d, got %d", tc.expectedStatus, rr.Code)
+			}
+			if !tc.expectError && rr.Code == http.StatusOK {
+				var response myProto.GetUserURLsResponse
+				if err := proto.Unmarshal(rr.Body.Bytes(), &response); err != nil {
+					t.Fatalf("failed to unmarshal response: %v", err)
+				}
+				if len(response.Urls) != len(tc.input) {
+					t.Errorf("expected %d URLs, got %d", len(tc.input), len(response.Urls))
+				}
+				for i, url := range response.Urls {
+					if url.ShortUrl != tc.input[i].ShortURL || url.OriginalUrl != tc.input[i].URL {
+						t.Errorf("URL mismatch at index %d", i)
+					}
+				}
+				if ct := rr.Header().Get("Content-Type"); ct != "application/grpc+proto" {
+					t.Errorf("expected Content-Type 'application/grpc+proto', got '%s'", ct)
+				}
 			}
 		})
 	}
