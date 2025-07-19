@@ -39,3 +39,8 @@ type getByUserIDResponseAPI struct {
 	ShortURL string `json:"short_url"`
 	URL      string `json:"original_url"`
 }
+
+type getStatsResponseAPI struct {
+	URLS  int `json:"urls"`
+	Users int `json:"users"`
+}
