@@ -23,7 +23,8 @@ func TestCreateShortURLByJSON(t *testing.T) {
 		checkBodyLength bool
 	}
 	type testRequest struct {
-		body any
+		body    any
+		headers map[string]string
 	}
 	tests := []struct {
 		description string
@@ -67,6 +68,52 @@ func TestCreateShortURLByJSON(t *testing.T) {
 				body: shortenRequestDataAPI{URL: "http://example.com"},
 			},
 		},
+		{
+			description: "Test #4. GRPC Success",
+			expect: expect{
+				status:          http.StatusOK,
+				contentType:     "application/grpc+proto",
+				checkBodyLength: true,
+			},
+			testRequest: testRequest{
+				body: shortenRequestDataAPI{URL: "http://example.com"},
+				headers: map[string]string{
+					"Accept": "application/grpc",
+				},
+			},
+		},
+		{
+			description: "Test #5. GRPC Invalid Body",
+			expect: expect{
+				status:          http.StatusBadRequest,
+				contentType:     "",
+				checkBodyLength: false,
+			},
+			testRequest: testRequest{
+				body: struct {
+					WrongField string `json:"wrong_field"`
+				}{
+					WrongField: "http://example.com",
+				},
+				headers: map[string]string{
+					"Accept": "application/grpc",
+				},
+			},
+		},
+		{
+			description: "Test #6. GRPC Conflict",
+			expect: expect{
+				status:          http.StatusOK,
+				contentType:     "application/grpc+proto",
+				checkBodyLength: true,
+			},
+			testRequest: testRequest{
+				body: shortenRequestDataAPI{URL: "http://conflict.com"},
+				headers: map[string]string{
+					"Accept": "application/grpc",
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.description, func(t *testing.T) {
@@ -74,6 +121,11 @@ func TestCreateShortURLByJSON(t *testing.T) {
 			request := httptest.NewRequest(
 				http.MethodPost, "/api/shorten", bytes.NewReader(jsonBody),
 			)
+			if test.testRequest.headers != nil {
+				for k, v := range test.testRequest.headers {
+					request.Header.Set(k, v)
+				}
+			}
 			ctx := context.WithValue(request.Context(), middleware.UserIDKey, 1)
 			w := httptest.NewRecorder()
 			repo := dbRepo.NewShortenRepository(database.DBConnection.Conn)
